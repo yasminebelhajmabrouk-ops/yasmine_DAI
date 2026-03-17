@@ -1,0 +1,42 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title DAI — C4 Component Diagram (Backend Spring Boot)
+
+Container_Boundary(api, "Backend API - Spring Boot") {
+
+  Component(authComp, "Authentication Module", "Spring Security / JWT", "Gère authentification, autorisation et contrôle d'accès")
+  Component(patientComp, "Patient Module", "Spring Boot Component", "Gère identité patient et dossier anesthésie")
+  Component(preopComp, "Pre-op Module", "Spring Boot Component", "Gère questionnaire pré-op, scores, validation")
+  Component(peropComp, "Per-op Module", "Spring Boot Component", "Gère session bloc, constantes, événements, médicaments")
+  Component(postopComp, "Post-op Module", "Spring Boot Component", "Gère SSPI, score de sortie, suivi douleur")
+  Component(alertComp, "Alert Module", "Spring Boot Component", "Détecte anomalies, génère et suit les alertes")
+  Component(reportComp, "Report Module", "Spring Boot Component", "Génère les rapports anesthésiques")
+  Component(auditComp, "Audit Module", "Spring Boot Component", "Trace les actions critiques")
+  Component(integrationComp, "Integration Module", "Spring Boot Component", "Dialogue avec SIH, IA et gateway biomédicale")
+  Component(repoComp, "Persistence Layer", "Spring Data JPA", "Accès aux données PostgreSQL")
+}
+
+ContainerDb(db, "PostgreSQL", "Database", "Données métier et audit")
+System_Ext(ai, "Service IA", "Calcul scores, recommandations")
+System_Ext(sih, "SIH / DPI", "Données patient / documents")
+System_Ext(gateway, "Device Gateway", "Flux biomédicaux")
+
+Rel(authComp, patientComp, "Protège l'accès")
+Rel(patientComp, repoComp, "Lit / écrit")
+Rel(preopComp, repoComp, "Lit / écrit")
+Rel(peropComp, repoComp, "Lit / écrit")
+Rel(postopComp, repoComp, "Lit / écrit")
+Rel(alertComp, repoComp, "Lit / écrit")
+Rel(reportComp, repoComp, "Lit / écrit")
+Rel(auditComp, repoComp, "Lit / écrit")
+Rel(integrationComp, repoComp, "Lit / écrit")
+
+Rel(preopComp, ai, "Appelle scores / assistance", "REST")
+Rel(integrationComp, sih, "Échange données", "REST / HL7 / FHIR")
+Rel(integrationComp, gateway, "Reçoit constantes", "REST / messaging")
+Rel(alertComp, peropComp, "Analyse constantes / événements")
+Rel(reportComp, patientComp, "Utilise données dossier")
+Rel(repoComp, db, "Stocke / lit", "SQL")
+
+@enduml

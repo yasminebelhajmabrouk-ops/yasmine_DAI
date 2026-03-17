@@ -1,0 +1,30 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title DAI — C4 System Context Diagram
+
+Person(patient, "Patient", "Remplit le questionnaire pré-opératoire")
+Person(anesthesiste, "Anesthésiste", "Valide les informations cliniques et prend les décisions")
+Person(iade, "IADE", "Suit le patient au bloc et enregistre les événements")
+Person(sspi, "Équipe SSPI", "Assure le suivi post-opératoire")
+Person(admin, "Administrateur IT", "Gère les utilisateurs, rôles et paramètres")
+
+System(dai, "DAI", "Dossier d’Anesthésie Intelligent couvrant le parcours pré-op, per-op et post-op")
+
+System_Ext(sih, "SIH / DPI", "Système d'information hospitalier / dossier patient informatisé")
+System_Ext(devices, "Dispositifs biomédicaux", "Moniteurs et équipements envoyant les constantes vitales")
+System_Ext(ai, "Services IA", "Calcul de scores, détection d’anomalies, assistance")
+System_Ext(auth, "Service d’authentification", "Gestion des identités et accès")
+
+Rel(patient, dai, "Remplit le questionnaire pré-op")
+Rel(anesthesiste, dai, "Consulte, valide, décide")
+Rel(iade, dai, "Suit le per-op, saisit médicaments et événements")
+Rel(sspi, dai, "Suit le post-op et évalue la sortie")
+Rel(admin, dai, "Administre la plateforme")
+
+Rel(dai, sih, "Lit / échange données patient et documents", "REST / HL7 / FHIR (à préciser)")
+Rel(devices, dai, "Envoie constantes vitales", "Gateway / protocole biomédical")
+Rel(dai, ai, "Appelle services d’aide à la décision", "API")
+Rel(dai, auth, "Authentifie les utilisateurs", "OIDC / JWT")
+
+@enduml
