@@ -1,0 +1,67 @@
+@startuml
+title DAI — Sequence Diagram (Per-opératoire / Bloc)
+
+actor IADE
+participant "DAI Frontend (Bloc)" as FE
+participant "DAI Backend API" as BE
+participant "Device Gateway (PCD/HL7)" as GW
+participant "Alert Engine" as AE
+database "DAI Database" as DB
+
+== Démarrage session Bloc ==
+IADE -> FE : Ouvrir écran per-op (patient X)
+FE -> BE : StartPerOpSession(patientId)
+BE -> DB : LoadActiveCase(patientId)
+DB --> BE : Case + paramètres (seuils, protocole)
+BE --> FE : SessionReady(caseContext)
+
+== Flux constantes (temps réel) ==
+loop Toutes les X secondes (stream)
+  GW -> BE : VitalSigns(patientId, FC, TA, SpO2, EtCO2, ...)
+  BE -> DB : SaveVitals(time, values)
+  DB --> BE : OK
+
+  BE -> AE : EvaluateRules(values, thresholds)
+  alt Anomalie détectée
+    AE --> BE : AlertRaised(type, severity, reason)
+    BE -> DB : SaveAlert(status="ACTIVE")
+    DB --> BE : OK
+    BE --> FE : PushUpdate(vitals + alert)
+  else Normal
+    AE --> BE : NoAlert
+    BE --> FE : PushUpdate(vitals)
+  end
+end
+
+== Événements manuels (médicaments / incidents) ==
+IADE -> FE : Saisir médicament (dose, heure)
+FE -> BE : RecordEvent(medication)
+BE -> DB : SaveEvent(medication)
+DB --> BE : OK
+BE --> FE : EventRecorded
+
+== Gestion alerte ==
+alt Alerte affichée
+  FE --> IADE : Notification alerte (visuelle/sonore)
+  IADE -> FE : Acquitter / commenter
+  FE -> BE : AcknowledgeAlert(alertId, comment)
+  BE -> DB : UpdateAlert(status="ACK", user, time)
+  DB --> BE : OK
+  BE --> FE : AlertAcknowledged
+end
+
+== Résilience (perte réseau / dispositif) ==
+alt Perte de flux dispositifs
+  GW -> BE : DeviceDisconnected
+  BE -> DB : SaveTechnicalEvent("DeviceDisconnected")
+  BE --> FE : ShowWarning("Flux dispositifs interrompu")
+end
+
+== Fin bloc ==
+IADE -> FE : Terminer session per-op
+FE -> BE : EndPerOpSession(caseId)
+BE -> DB : CloseCaseSegment("PEROP")
+DB --> BE : OK
+BE --> FE : SessionClosed
+
+@enduml

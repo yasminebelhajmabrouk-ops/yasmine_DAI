@@ -1,0 +1,42 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title DAI — C4 Container Diagram
+
+Person(patient, "Patient", "Remplit le questionnaire pré-opératoire")
+Person(anesthesiste, "Anesthésiste", "Valide les données cliniques")
+Person(iade, "IADE", "Suit le patient au bloc")
+Person(sspi, "Équipe SSPI", "Suit le patient en post-op")
+Person(admin, "Administrateur IT", "Gère la plateforme")
+
+System_Ext(sih, "SIH / DPI", "Système hospitalier")
+System_Ext(devices, "Dispositifs biomédicaux", "Moniteurs / équipements")
+System_Ext(ai, "Service IA", "Scores et assistance décisionnelle")
+System_Ext(auth, "Auth Service", "OIDC / JWT")
+
+System_Boundary(dai, "DAI") {
+
+  Container(frontend, "Frontend Web", "Angular", "Interface utilisateur web pour pré-op, per-op, post-op et administration")
+  
+  Container(api, "Backend API", "Spring Boot", "Expose les API REST, applique la logique métier, gère sécurité, alertes et audit")
+
+  ContainerDb(db, "Database", "PostgreSQL", "Stocke patients, dossiers anesthésie, scores, constantes, événements, alertes et audit")
+
+  Container(gateway, "Device Gateway", "Adapter / Integration Layer", "Reçoit les constantes biomédicales et les transmet au backend")
+}
+
+Rel(patient, frontend, "Utilise", "HTTPS")
+Rel(anesthesiste, frontend, "Utilise", "HTTPS")
+Rel(iade, frontend, "Utilise", "HTTPS")
+Rel(sspi, frontend, "Utilise", "HTTPS")
+Rel(admin, frontend, "Utilise", "HTTPS")
+
+Rel(frontend, api, "Appelle", "REST / JSON")
+Rel(api, db, "Lit / écrit", "SQL")
+Rel(gateway, api, "Envoie données biomédicales", "REST / messaging")
+Rel(api, ai, "Appelle le calcul de scores / recommandations", "REST")
+Rel(api, auth, "Valide authentification / tokens", "OIDC / JWT")
+Rel(api, sih, "Échange données patient / documents", "REST / HL7 / FHIR")
+Rel(devices, gateway, "Envoie constantes", "Protocole biomédical")
+
+@enduml
