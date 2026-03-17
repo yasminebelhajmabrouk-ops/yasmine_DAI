@@ -1,0 +1,37 @@
+@startuml
+title DAI — Use Case Diagram
+
+left to right direction
+
+actor Patient
+actor Anesthesiste
+actor IADE
+actor "Equipe SSPI" as SSPI
+actor "Admin IT" as Admin
+actor "Dispositifs Biomédicaux" as Devices
+actor "SIH / DPI" as SIH
+
+rectangle DAI {
+
+  Patient --> (Remplir questionnaire pré-op)
+  Anesthesiste --> (Valider questionnaire)
+  Anesthesiste --> (Consulter dossier anesthésie)
+  Anesthesiste --> (Valider alertes)
+  Anesthesiste --> (Générer rapport anesthésie)
+
+  IADE --> (Suivi per-op temps réel)
+  IADE --> (Enregistrer événements per-op)
+  IADE --> (Administrer médicaments)
+
+  SSPI --> (Suivi post-op)
+  SSPI --> (Calcul score sortie)
+
+  Admin --> (Gérer utilisateurs & rôles)
+  Admin --> (Configurer seuils & protocoles)
+
+  Devices --> (Envoyer constantes vitales)
+  SIH --> (Synchroniser identité patient)
+  SIH --> (Exporter document anesthésie)
+}
+
+@enduml

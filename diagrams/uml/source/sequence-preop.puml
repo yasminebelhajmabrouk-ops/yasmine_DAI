@@ -1,0 +1,47 @@
+@startuml
+title DAI — Sequence Diagram (Pré-opératoire)
+
+actor Patient
+participant "DAI Frontend" as FE
+participant "DAI Backend API" as BE
+participant "AI Module (Scoring)" as AI
+database "DAI Database" as DB
+participant "SIH / DPI" as SIH
+
+== Initialisation ==
+
+Patient -> FE : Accéder au questionnaire pré-op
+FE -> BE : Demande questionnaire
+BE -> DB : Charger modèle questionnaire
+DB --> BE : Questionnaire
+BE --> FE : Questionnaire
+
+== Remplissage questionnaire ==
+
+Patient -> FE : Soumettre réponses
+FE -> BE : Transmettre réponses
+
+== Traitement IA ==
+
+BE -> AI : Calculer scores (ASA, RCRI, Apfel, Mallampati)
+AI --> BE : Scores calculés + alertes potentielles
+
+== Sauvegarde ==
+
+BE -> DB : Enregistrer réponses + scores
+DB --> BE : Confirmation
+
+== Validation médicale ==
+
+Anesthesiste -> FE : Consulter dossier pré-op
+FE -> BE : Charger dossier
+BE -> DB : Lire données patient
+DB --> BE : Données complètes
+BE --> FE : Afficher données + scores
+
+Anesthesiste -> FE : Valider / corriger
+FE -> BE : Enregistrer validation
+BE -> DB : Mise à jour dossier
+DB --> BE : Confirmation
+
+@enduml
