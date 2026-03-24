@@ -107,9 +107,9 @@ System_Ext(auth, "Auth Service", "OIDC / JWT")
 
 System_Boundary(dai, "DAI") {
 
-  Container(frontend, "Frontend Web", "Angular", "Interface utilisateur web pour pré-op, per-op, post-op et administration")
+  Container(frontend, "Frontend Web", "React", "Interface utilisateur web pour pré-op, per-op, post-op et administration")
 
-  Container(api, "Backend API", "Spring Boot", "Expose les API REST, applique la logique métier, gère sécurité, alertes et audit")
+  Container(api, "Backend API", "Django REST Framework", "Expose les API REST, applique la logique métier, gère sécurité, alertes et audit")
 
   ContainerDb(db, "Database", "PostgreSQL", "Stocke patients, dossiers anesthésie, scores, constantes, événements, alertes et audit")
 
@@ -134,11 +134,11 @@ Rel(devices, gateway, "Envoie constantes", "Protocole biomédical")
 ```
 
 ### 4.2 Explication
-- **Frontend Web (Angular)** :
+- **Frontend Web (React)** :
   - Écrans pré‑op (questionnaire), per‑op (monitoring + événements + alertes), post‑op (SSPI + Aldrete), admin (RBAC + paramètres).
   - Appels au backend en REST/JSON, avec une stratégie “quasi temps réel” per‑op (MVP : polling/SSE, évolution : WebSocket).
-- **Backend API (Spring Boot)** :
-  - Orchestration des cas d’usage, règles métier, sécurité (Spring Security, RBAC), audit, alertes, intégrations.
+- **Backend API (Django REST Framework)** :
+  - Orchestration des cas d’usage, règles métier, sécurité (authentification Django + JWT/OIDC, RBAC), audit, alertes, intégrations.
 - **Database (PostgreSQL)** :
   - Persistance structurée et historisée (notamment *time-series* per‑op : constantes) + audit.
 - **Device Gateway** :
@@ -147,7 +147,7 @@ Rel(devices, gateway, "Envoie constantes", "Protocole biomédical")
 ## 5) Description des composants principaux
 Cette section décrit les composants principaux **au sens C4** (conteneurs et grands sous-systèmes internes) en cohérence avec l’architecture modulaire.
 
-### 5.1 Frontend Web (Angular)
+### 5.1 Frontend Web (React)
 Découpage fonctionnel (features) attendu :
 - **preop** : questionnaire patient, affichage scores, validation/correction anesthésiste.
 - **perop** : écran bloc, affichage constantes, saisie événements/médicaments, affichage alertes et acquittement.
@@ -155,10 +155,10 @@ Découpage fonctionnel (features) attendu :
 - **admin** : gestion utilisateurs/rôles, paramétrage seuils/protocoles/modèles.
 
 Composants transverses :
-- **core** : configuration, interceptors (auth, corrélation), gestion erreurs, routage.
+- **core** : configuration, client HTTP (auth, corrélation), gestion erreurs, routage.
 - **shared-ui** : composants réutilisables (tableaux, formulaires, timeline, badges d’état, composants d’alerte).
 
-### 5.2 Backend API (Spring Boot — monolithe modulaire)
+### 5.2 Backend API (Django — backend modulaire par apps)
 Modules applicatifs principaux (référence architecture, alignés PRD/UML) :
 - **Authentication** : authn/authz (JWT/OIDC), RBAC.
 - **Patient / Case** : identité patient + dossier anesthésique + transitions d’état.
@@ -226,8 +226,8 @@ Cette traçabilité garantit que la vue C4 est la traduction directe des choix d
 
 | Élément Architecture (Phase 3) | Élément C4 | Commentaire |
 |---|---|---|
-| Frontend Angular (pré/per/post/admin) | Container `Frontend Web (Angular)` | Même périmètre fonctionnel, mêmes acteurs |
-| Backend Spring Boot (monolithe modulaire) | Container `Backend API (Spring Boot)` | Unique API REST, modules internes décrits en composants |
+| Frontend React (pré/per/post/admin) | Container `Frontend Web (React)` | Même périmètre fonctionnel, mêmes acteurs |
+| Backend Django (modulaire par apps) | Container `Backend API (Django REST Framework)` | Unique API REST, modules internes décrits en composants |
 | PostgreSQL (données + audit) | Container `Database (PostgreSQL)` | Persistance structurée, historisation mesures, audit |
 | Device Gateway (intégration biomédicale) | Container `Device Gateway` | Anti-corruption layer et normalisation des mesures |
 | SIH/DPI (intégration) | System_Ext `SIH / DPI` | Identité patient, documents ; protocole à préciser |

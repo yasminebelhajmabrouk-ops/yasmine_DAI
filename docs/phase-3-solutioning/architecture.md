@@ -29,15 +29,15 @@ Ce document d’architecture consolide la cible technique à partir du Product B
 - Extensibilité : intégrations SIH/DPI et dispositifs biomédicaux, services IA (progressif).
 
 ### 1.2 Composants (niveau système)
-- **Frontend Angular** : UI pré‑op, per‑op, post‑op, administration.
-- **Backend Spring Boot** : logique métier, sécurité, audit, alertes, API.
+- **Frontend React** : UI pré‑op, per‑op, post‑op, administration.
+- **Backend Django** : logique métier, sécurité, audit, alertes, API.
 - **PostgreSQL** : persistance des dossiers, questionnaires, scores, constantes, événements, alertes, audit.
 - **Device Gateway** : adaptateur d’intégration biomédicale.
 - **Systèmes externes** : SIH/DPI, service d’authentification, services IA.
 
-## 2) Architecture frontend (Angular)
+## 2) Architecture frontend (React)
 ### 2.1 Découpage applicatif
-- **Core** : bootstrap, configuration, interceptors HTTP (auth, corrélation), gestion erreurs.
+- **Core** : bootstrap, configuration, client HTTP (auth, corrélation), gestion erreurs.
 - **Auth** : login/SSO (selon stratégie), gestion session/token.
 - **Shared UI** : composants réutilisables (formulaires, tableaux, timelines, badges d’état).
 - **Features** (par domaine métier) :
@@ -56,14 +56,14 @@ Ce document d’architecture consolide la cible technique à partir du Product B
 - Écrans per‑op/SSPI “always‑on” : priorité à la continuité d’affichage, gestion des erreurs réseau (mode dégradé).
 - Affichage état du flux biomédical (connecté/dégradé/absent) + notifications.
 
-## 3) Architecture backend (Spring Boot)
+## 3) Architecture backend (Django)
 ### 3.1 Style d’architecture
-- **Monolithe modulaire** (au départ) : packages/modules bien séparés, API REST unique.
+- **Backend Django modulaire par apps** (au départ, monolithe modulaire) : un seul déploiement, frontières par apps explicites, API REST unique.
 - Couche **Application** (use cases), **Domain** (métier), **Infrastructure** (DB, intégrations).
 
 ### 3.2 Modules backend (composants)
 Référence (C4 Component) alignée avec le périmètre PRD :
-- **Authentication module** : Spring Security, JWT/OIDC, RBAC.
+- **Authentication module** : authentification Django, JWT et/ou OIDC, RBAC.
 - **Patient module** : identité patient + dossier anesthésie.
 - **Pre‑op module** : questionnaire, réponses, calcul scores, validation.
 - **Per‑op module** : session bloc, constantes, événements/médicaments.
@@ -72,7 +72,7 @@ Référence (C4 Component) alignée avec le périmètre PRD :
 - **Report module** : génération de synthèse anesthésique + archivage.
 - **Audit module** : journalisation actions critiques.
 - **Integration module** : SIH/DPI, services IA, device gateway.
-- **Persistence layer** : Spring Data JPA, transactions.
+- **Persistence layer** : ORM Django, transactions.
 
 ### 3.3 Contrats d’API (exemples)
 - `POST /patients` : création patient (si non fourni par SIH/DPI).
@@ -275,10 +275,9 @@ System_Ext(ai, "Service IA", "Scores et assistance décisionnelle")
 System_Ext(auth, "Auth Service", "OIDC / JWT")
 
 System_Boundary(dai, "DAI") {
-
-  Container(frontend, "Frontend Web", "Angular", "Interface utilisateur web pour pré-op, per-op, post-op et administration")
+  Container(frontend, "Frontend Web", "React", "Interface utilisateur web pour pré-op, per-op, post-op et administration")
   
-  Container(api, "Backend API", "Spring Boot", "Expose les API REST, applique la logique métier, gère sécurité, alertes et audit")
+  Container(api, "Backend API", "Django REST Framework", "Expose les API REST, applique la logique métier, gère sécurité, alertes et audit")
 
   ContainerDb(db, "Database", "PostgreSQL", "Stocke patients, dossiers anesthésie, scores, constantes, événements, alertes et audit")
 
@@ -304,16 +303,16 @@ Rel(devices, gateway, "Envoie constantes", "Protocole biomédical")
 
 ## 10) Choix technologiques
 ### 10.1 Stack retenue (ADR)
-- **Frontend** : Angular.
-- **Backend** : Spring Boot.
+- **Frontend** : React.
+- **Backend** : Django.
 - **Base de données** : PostgreSQL.
-- **API** : REST.
-- **Sécurité** : Spring Security, JWT (phase initiale), OIDC si SSO.
-- **Temps réel** : WebSocket en phase ultérieure.
+- **API** : Django REST Framework (REST).
+- **Sécurité** : authentification Django + JWT et/ou OIDC selon le contexte (SSO/MFA selon politique).
+- **Temps réel** : à prévoir ultérieurement si nécessaire.
 
 ### 10.2 Rationnel
-- Angular : structuration adaptée aux applications complexes.
-- Spring Boot : socle robuste pour API sécurisées et modulaires.
+- React : structuration adaptée aux applications complexes.
+- Django : socle robuste pour API sécurisées et modulaires.
 - PostgreSQL : stabilité et cohérence transactionnelle pour le cœur métier.
 
 ---
