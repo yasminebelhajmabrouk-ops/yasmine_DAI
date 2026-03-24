@@ -61,7 +61,7 @@ Construire une plateforme DAI capable de centraliser les informations anesthési
 - Questionnaire patient numérique (bilingue FR/AR, même modèle métier).
 - Calcul automatique de scores (au minimum ASA, RCRI/Lee, Apfel, Mallampati; extensible).
 - Affichage de points d’attention / alertes nécessitant validation.
-- Validation/correction par anesthésiste.
+- Consultation pré‑anesthésique par anesthésiste avec décision : autoriser l’anesthésie, demander des examens complémentaires, demander un avis spécialisé, ou récuser l’anesthésie.
 
 **Per‑opératoire (bloc)**
 - Interface de suivi quasi temps réel.
@@ -86,17 +86,19 @@ Construire une plateforme DAI capable de centraliser les informations anesthési
 
 ## 6) Utilisateurs & parties prenantes
 - **Patient** : saisie du questionnaire pré‑op.
-- **Anesthésiste** : validation, décision, prescriptions, synthèse.
+- **Anesthésiste** : consultation pré‑anesthésique, décision (autoriser / examens / avis / récuser), prescriptions, synthèse.
 - **IADE / infirmier anesthésiste** : suivi per‑op, événements/médicaments, alertes.
 - **Équipe SSPI** : suivi post‑op et sortie.
 - **Admin / IT hospitalier** : sécurité, rôles, intégrations, exploitation.
 - **Systèmes externes** : SIH/DPI, dispositifs biomédicaux, services IA (selon phasage).
 
 ## 7) Parcours & cas d’usage clés
-### Pré‑op (questionnaire → scores → validation)
+### Pré‑op (questionnaire → scores → décision)
 - Le patient complète un questionnaire structuré.
 - Le système calcule des scores et identifie des points d’attention.
-- L’anesthésiste valide/corrige et clôture la préparation.
+
+- L’anesthésiste réalise la consultation pré‑anesthésique et prend une décision : autoriser l’anesthésie, demander des examens complémentaires, demander un avis spécialisé, ou récuser l’anesthésie.
+- Le dernier contrôle d’anesthésie est effectué juste avant l’intervention (généralement la veille ou le jour même ; en cas d’anesthésie ambulatoire, le jour même).
 
 ### Per‑op (monitoring → événements → alertes)
 - L’IADE suit les constantes, enregistre actes/médicaments.
@@ -154,14 +156,15 @@ Le moteur doit supporter des scores tels que : Duke/METs, RCRI/Lee, STOP‑BANG,
 - Les scores doivent conserver le détail du calcul et être recalculables après correction.
 - La validation finale revient au médecin.
 - FR/AR partagent le même modèle métier.
+- Le système doit pouvoir tracer la date/heure (prévue et/ou réalisée) du dernier contrôle d’anesthésie avant l’intervention.
 
 ## 10) Architecture cible (haut niveau)
 ### Stack (décision ADR)
-- Frontend : **Angular**
-- Backend : **Spring Boot**
+- Frontend : **React**
+- Backend : **Django**
 - Base de données : **PostgreSQL**
-- API : **REST**
-- Sécurité : Spring Security, JWT (phase initiale)
+- API : **Django REST Framework (REST)**
+- Sécurité : **authentification Django** + **JWT et/ou OIDC** selon le contexte (SSO/MFA selon politique)
 
 ### Décomposition logique
 - Frontend : formulaires pré‑op, vue per‑op, suivi SSPI, consultation.

@@ -14,12 +14,12 @@ inputs:
 # Backend Module Design — Phase 3 (Solutioning)
 
 ## 1) Objectif du document
-Ce document décrit la **décomposition du backend Spring Boot** de DAI-BMAD en **modules métier** (monolithe modulaire), dérivés du PRD, de l’architecture, de l’UML Design et du C4 Design.
+Ce document décrit la **décomposition du backend Django** de DAI-BMAD en **apps / modules métier** (backend modulaire par apps), dérivés du PRD, de l’architecture, de l’UML Design et du C4 Design.
 
 Objectifs :
 - Établir une **carte des modules** (responsabilités, frontières, dépendances).
-- Proposer une **structuration Java** (packages, couches) qui limite le couplage et facilite les évolutions.
-- Donner une base actionnable pour l’implémentation : **entités**, **services**, **repositories**, **contrôleurs API** par module.
+- Proposer une **structuration Django** (projet + apps, couches internes) qui limite le couplage et facilite les évolutions.
+- Donner une base actionnable pour l’implémentation : **modèles (ORM)**, **services applicatifs**, **accès données (ORM/managers)**, **API DRF (views/viewsets + serializers)** par app.
 
 ## 2) Position dans BMAD
 - Phase BMAD : **Phase 3 — Solutioning**.
@@ -32,27 +32,27 @@ Objectifs :
 
 ## 3) Principes de structuration du backend
 ### 3.1 Style d’architecture retenu
-- **Monolithe modulaire** (première étape) : un seul déploiement Spring Boot, avec des frontières de modules explicites.
+- **Backend Django modulaire par apps** (première étape, monolithe modulaire) : un seul déploiement Django, avec des frontières d’apps explicites.
 - **API REST** centrale (contrats alignés sur l’architecture), échanges JSON.
 - **PostgreSQL** comme persistance principale, avec historisation (mesures) et audit.
 
 ### 3.2 Organisation interne par couches (par module)
 Pour limiter le couplage, chaque module suit une structure cohérente :
-- **api** : contrôleurs REST, DTO (request/response), mapping, validation des entrées.
+- **api** : endpoints via Django REST Framework (views/viewsets), serializers (request/response), permissions, routing.
 - **application** : cas d’usage (services applicatifs), orchestration transactionnelle, règles de workflow.
 - **domain** : modèle métier (entités, value objects, invariants), événements métier (si retenus).
-- **infrastructure** : adaptateurs techniques (JPA repositories, clients SIH/IA, intégration gateway, stockage document, etc.).
+- **infrastructure** : adaptateurs techniques (clients SIH/IA, intégration gateway, stockage document, etc.) et accès DB via ORM Django (queries/managers).
 
 ### 3.3 Règles de dépendances (anti-couplage)
 - Les modules “métier” (pré‑op, per‑op, post‑op…) **dépendent** du noyau dossier (case) et du patient.
 - Le module **audit** est transversal (appelé par les autres modules), mais **ne dépend pas** d’eux.
 - Le module **integration** expose des interfaces/clients ; il ne porte pas de logique métier du dossier.
-- Le module **auth** (Spring Security, RBAC) est transversal pour la couche API ; la logique métier ne “connaît” l’utilisateur qu’au travers d’un contexte minimal (ex. `currentUserId`).
+- Le module **auth** (authentification Django + JWT/OIDC, RBAC) est transversal pour la couche API ; la logique métier ne “connaît” l’utilisateur qu’au travers d’un contexte minimal (ex. `currentUserId`).
 
 ### 3.4 Conventions techniques recommandées
 - Transactions : limites au niveau **application**, granularité par cas d’usage.
-- DTO vs Domain : pas d’exposition directe d’entités JPA dans l’API.
-- Validation : Bean Validation sur DTO + vérifications métier dans domain/application.
+- DTO vs Domain : pas d’exposition directe des modèles ORM dans l’API (serializer comme frontière).
+- Validation : validation DRF côté serializers + vérifications métier dans domain/application.
 - Audit : journaliser les actions critiques (création dossier, transitions d’état, validation, acquittement alerte, génération document, changements paramètres).
 - Intégrations : pattern **anti-corruption layer** (mapping et contrôle d’erreurs) pour SIH, IA, biomédical.
 
@@ -64,7 +64,7 @@ La liste ci-dessous est alignée sur l’architecture (modules métier principau
 | auth | Authn/Authz, RBAC, users/roles | FR-21..FR-22 + sécurité | 
 | patient | Identité patient + accès patient | FR-01..FR-04 (partiel) + intégration SIH |
 | case | Dossier anesthésique, états/transitions | FR-01..FR-03, workflow UML |
-| preop | Questionnaire, réponses, scores, validation | FR-05..FR-09, séquence pré‑op UML |
+| preop | Questionnaire, réponses, scores, consultation/décision | FR-05..FR-09, séquence pré‑op UML |
 | perop | Session bloc, vitals, événements, historisation | FR-10..FR-13, séquence per‑op UML |
 | postop | SSPI, douleur, score Aldrete | FR-15..FR-16 |
 | alert | Cycle de vie alertes et règles | FR-09 / FR-14 + per‑op (P1) |
@@ -89,7 +89,7 @@ La liste ci-dessous est alignée sur l’architecture (modules métier principau
 
 ### preop
 - Gestion du questionnaire (structure/état), enregistrement des réponses.
-- Calcul et historisation des scores (ASA, RCRI, Apfel, Mallampati), puis validation/correction.
+- Calcul et historisation des scores (ASA, RCRI, Apfel, Mallampati), puis consultation pré‑anesthésique et décision (autoriser / examens complémentaires / avis spécialisé / récuser).
 
 ### perop
 - Démarrage/fin de session per‑op.
@@ -132,76 +132,79 @@ La liste ci-dessous est alignée sur l’architecture (modules métier principau
 ### 6.2 Dépendances techniques (règles)
 - La couche `api` dépend de `application`.
 - `application` dépend de `domain` et d’interfaces d’accès (ports) déclarées dans le module.
-- `infrastructure` implémente ces ports (JPA/clients externes).
+- `infrastructure` implémente ces ports (ORM Django / clients externes).
 - Éviter les “imports croisés” de `domain` entre modules : préférer des IDs (`patientId`, `caseId`) et des services de lecture.
 
-## 7) Packages Java recommandés
-Le code n’étant pas encore présent dans ce workspace, le package racine est **à confirmer** (choix recommandé ci-dessous).
+## 7) Structure Django recommandée (projet + apps)
+Le code n’étant pas encore présent dans ce workspace, les noms exacts (dossier projet, apps) sont **à confirmer**. La recommandation ci‑dessous vise la cohérence et la modularité.
 
-Recommandation (à ajuster à votre `groupId`) :
-- Racine : `com.dai.api`
+Recommandation (exemple) :
+- Projet Django : `dai_api/` (settings, urls, wsgi/asgi)
+- Dossier commun : `common/` (erreurs, types partagés, utilitaires, time, pagination, contexte sécurité)
+- Apps métier (backend modulaire par apps) :
+  - `auth/` (authentification Django + JWT/OIDC, RBAC)
+  - `patient/`
+  - `case/` (dossier anesthésique)
+  - `preop/`
+  - `perop/`
+  - `postop/`
+  - `alert/`
+  - `report/`
+  - `settings/`
+  - `audit/` (API facultative selon périmètre)
+  - `integration/`
 
-Structure :
-- `com.dai.bmad.config` (Spring Security, OpenAPI, Jackson, persistence, etc.)
-- `com.dai.bmad.common` (erreurs, types, utilitaires, time, pagination, security-context)
-- `com.dai.bmad.auth.{api,application,domain,infrastructure}`
-- `com.dai.bmad.patient.{api,application,domain,infrastructure}`
-- `com.dai.bmad.casefile.{api,application,domain,infrastructure}`
-- `com.dai.bmad.preop.{api,application,domain,infrastructure}`
-- `com.dai.bmad.perop.{api,application,domain,infrastructure}`
-- `com.dai.bmad.postop.{api,application,domain,infrastructure}`
-- `com.dai.bmad.alert.{api,application,domain,infrastructure}`
-- `com.dai.bmad.report.{api,application,domain,infrastructure}`
-- `com.dai.bmad.settings.{api,application,domain,infrastructure}`
-- `com.dai.bmad.audit.{api,application,domain,infrastructure}` (API facultative)
-- `com.dai.bmad.integration.{application,infrastructure}` (clients externes, anti-corruption layer)
+Structure interne (recommandée) par app :
+- `api/` : `urls.py`, `views.py`/`viewsets.py`, `serializers.py`, `permissions.py`
+- `application/` : services applicatifs (use cases)
+- `domain/` : logique métier (si isolée)
+- `infrastructure/` : clients externes, adaptateurs, stockage document, implémentations spécifiques
+- `models.py` (ou `models/`) : modèles ORM Django et migrations associées
 
-Note : le terme `casefile` évite le mot-clé Java `case`.
-
-## 8) Entités principales par module
+## 8) Modèles (ORM) principaux par module
 ## 9) Services principaux par module
-## 10) Repositories principaux par module
-## 11) Contrôleurs API principaux par module
+## 10) Accès aux données (ORM) principaux par module
+## 11) API (Django REST Framework) par module
 Les éléments ci-dessous sont listés de façon **indicative** et alignée avec :
 - le modèle UML (entités et statuts),
 - la proposition de tables Postgres (architecture),
 - les routes API exemples (architecture).
 
 ### 11.1 auth
-- Entités : `User`, `Role`, (évent.) `UserRole`
+- Modèles (ORM) : `User`, `Role`, (évent.) `UserRole`
 - Services : `UserService`, `RoleService`, `AuthorizationService` (RBAC), `TokenValidationService` (JWT/OIDC)
-- Repositories : `UserRepository`, `RoleRepository`, `UserRoleRepository`
-- Contrôleurs :
+- Accès données (ORM) : ORM Django + managers/queries (ex. `User.objects`, `Role.objects`)
+- API (DRF) :
   - `GET /users`, `POST /users`
   - `GET /roles`
   - `PUT /users/{id}/roles`
 
 ### 11.2 patient
-- Entités : `Patient`
+- Modèles (ORM) : `Patient`
 - Services : `PatientService` (CRUD), `PatientHistoryService` (lecture dossiers)
-- Repositories : `PatientRepository`
-- Contrôleurs :
+- Accès données (ORM) : ORM Django + managers/queries (ex. `Patient.objects`)
+- API (DRF) :
   - `POST /patients` (si création interne)
   - `GET /patients/{id}`
   - `GET /patients/{id}/cases`
 
 ### 11.3 case (dossier anesthésique)
-- Entités : `AnesthesiaCase`, `CaseStatus`
+- Modèles (ORM) : `AnesthesiaCase`, `CaseStatus`
 - Services : `CaseService` (CRUD), `CaseStateTransitionService` (transitions + audit)
-- Repositories : `AnesthesiaCaseRepository`
-- Contrôleurs :
+- Accès données (ORM) : ORM Django + managers/queries (ex. `AnesthesiaCase.objects`)
+- API (DRF) :
   - `POST /cases`, `GET /cases/{id}`, `PATCH /cases/{id}`
   - `POST /cases/{id}/state`
 
 ### 11.4 preop
-- Entités : `PreOpQuestionnaire`, `QuestionnaireResponse`, `ClinicalScore`, `ValidationStatus`, `ScoreType`
+- Modèles (ORM) : `PreOpQuestionnaire`, `QuestionnaireResponse`, `ClinicalScore`, `ValidationStatus`, `ScoreType`
 - Services :
   - `QuestionnaireService` (structure/état)
   - `QuestionnaireSubmissionService` (soumission réponses)
   - `ScoringService` (calcul scores ; appelle `integration` si IA externe)
-  - `PreOpValidationService` (validation/correction + audit)
-- Repositories : `PreOpQuestionnaireRepository`, `QuestionnaireResponseRepository`, `ClinicalScoreRepository`
-- Contrôleurs :
+  - `PreOpValidationService` (consultation pré‑anesthésique : corrections + décision + audit)
+- Accès données (ORM) : ORM Django + managers/queries (ex. `PreOpQuestionnaire.objects`, `QuestionnaireResponse.objects`, `ClinicalScore.objects`)
+- API (DRF) :
   - `GET /cases/{id}/preop/questionnaire`
   - `POST /cases/{id}/preop/questionnaire/submission`
   - `GET /cases/{id}/preop/scores`
@@ -209,14 +212,14 @@ Les éléments ci-dessous sont listés de façon **indicative** et alignée avec
   - `POST /cases/{id}/preop/validation`
 
 ### 11.5 perop
-- Entités : `PerOpSession`, `VitalSignMeasurement`, `Event`, `MedicationAdministration`, `EventType`
+- Modèles (ORM) : `PerOpSession`, `VitalSignMeasurement`, `Event`, `MedicationAdministration`, `EventType`
 - Services :
   - `PerOpSessionService` (start/end)
   - `VitalsIngestionService` (ingestion + historisation)
   - `PerOpSummaryService` (données écran per‑op)
   - `EventService` (événements + médicaments)
-- Repositories : `PerOpSessionRepository`, `VitalSignMeasurementRepository`, `EventRepository`, `MedicationAdministrationRepository`
-- Contrôleurs :
+- Accès données (ORM) : ORM Django + managers/queries (ex. `PerOpSession.objects`, `VitalSignMeasurement.objects`)
+- API (DRF) :
   - `GET /cases/{id}/perop/summary`
   - `POST /cases/{id}/perop/sessions/start`
   - `POST /cases/{id}/perop/sessions/end`
@@ -226,57 +229,57 @@ Les éléments ci-dessous sont listés de façon **indicative** et alignée avec
   - `GET /cases/{id}/perop/events`
 
 ### 11.6 postop
-- Entités : `PostOpStay`, `ClinicalScore` (type = `ALDRETE`)
+- Modèles (ORM) : `PostOpStay`, `ClinicalScore` (type = `ALDRETE`)
 - Services : `PostOpObservationService`, `AldreteScoringService`
-- Repositories : `PostOpStayRepository`, `ClinicalScoreRepository`
-- Contrôleurs :
+- Accès données (ORM) : ORM Django + managers/queries (ex. `PostOpStay.objects`, `ClinicalScore.objects`)
+- API (DRF) :
   - `GET /cases/{id}/postop/observations`
   - `POST /cases/{id}/postop/observations`
   - `GET /cases/{id}/postop/scores/aldrete`
 
 ### 11.7 alert
-- Entités : `Alert`, `AlertStatus`, `AlertType`, `Severity`
+- Modèles (ORM) : `Alert`, `AlertStatus`, `AlertType`, `Severity`
 - Services :
   - `AlertQueryService` (listing)
   - `AlertLifecycleService` (ack/resolve + audit)
   - `AlertEvaluationService` (évaluation règles/seuils ; intégration `settings`)
-- Repositories : `AlertRepository`
-- Contrôleurs :
+- Accès données (ORM) : ORM Django + managers/queries (ex. `Alert.objects`)
+- API (DRF) :
   - `GET /cases/{id}/alerts`
   - `POST /alerts/{id}/ack`
   - `POST /alerts/{id}/resolve`
 
 ### 11.8 report
-- Entités : `AnesthesiaReport` et/ou `Document` (selon modélisation retenue), métadonnées export
+- Modèles (ORM) : `AnesthesiaReport` et/ou `Document` (selon modélisation retenue), métadonnées export
 - Services : `ReportGenerationService`, `DocumentService`, `DocumentExportService`
-- Repositories : `DocumentRepository`
-- Contrôleurs :
+- Accès données (ORM) : ORM Django + managers/queries (ex. `Document.objects`)
+- API (DRF) :
   - `POST /cases/{id}/documents/anesthesia-report`
   - `GET /cases/{id}/documents`
   - `GET /documents/{id}`
   - `GET /documents/{id}/export`
 
 ### 11.9 settings
-- Entités : `Setting` (clé/valeur) et/ou objets typés (`AlertThresholds`, `Protocol`, `DocumentTemplate`)
+- Modèles (ORM) : `Setting` (clé/valeur) et/ou objets typés (`AlertThresholds`, `Protocol`, `DocumentTemplate`)
 - Services : `SettingsQueryService`, `SettingsUpdateService` (avec audit)
-- Repositories : `SettingsRepository`
-- Contrôleurs :
+- Accès données (ORM) : ORM Django + managers/queries (ex. `Setting.objects`)
+- API (DRF) :
   - `GET /settings`
   - `PUT /settings/alert-thresholds`
   - `PUT /settings/protocols`
   - `PUT /settings/document-templates`
 
 ### 11.10 audit
-- Entités : `AuditLog`
+- Modèles (ORM) : `AuditLog`
 - Services : `AuditService` (append-only), `AuditContextService` (corrélation)
-- Repositories : `AuditLogRepository`
-- Contrôleurs : (facultatif) lecture admin/support, selon exigences de sécurité.
+- Accès données (ORM) : ORM Django + managers/queries (ex. `AuditLog.objects`)
+- API (DRF) : (facultatif) lecture admin/support, selon exigences de sécurité.
 
 ### 11.11 integration
 - Entités : principalement des DTO d’intégration (SIH, IA, biomédical)
 - Services : `SihClient`, `AiScoringClient`, `DeviceGatewayAdapter`, `IntegrationFacade`
-- Repositories : aucun (sauf table de mapping/état si requis)
-- Contrôleurs : selon choix d’intégration (webhooks, endpoints internes), à préciser.
+- Accès données (ORM) : aucun (sauf table de mapping/état si requis)
+- API (DRF) : selon choix d’intégration (webhooks, endpoints internes), à préciser.
 
 ## 12) Préparation à l’implémentation
 ### 12.1 Décisions à verrouiller avant code
@@ -292,9 +295,9 @@ Les éléments ci-dessous sont listés de façon **indicative** et alignée avec
 
 ### 12.3 Outillage et garde-fous
 - Spécification OpenAPI dès le début (contrat FE↔BE et GW↔BE).
-- Migrations DB (Flyway/Liquibase) : tables patient/case/preop/perop/postop/alerts/documents/settings/audit.
+- Migrations DB (migrations Django) : tables patient/case/preop/perop/postop/alerts/documents/settings/audit.
 - Tests :
   - tests d’acceptation sur les flux PRD (Given/When/Then),
   - tests de cycle de vie alertes,
   - tests de transitions d’état du dossier.
-- Qualité : règles d’architecture (ex. ArchUnit) pour contrôler les dépendances entre modules.
+- Qualité : règles d’architecture (linting/tests de dépendances) pour contrôler les dépendances entre apps/modules.

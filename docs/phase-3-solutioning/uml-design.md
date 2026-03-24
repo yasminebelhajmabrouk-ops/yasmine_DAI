@@ -30,7 +30,7 @@ Objectifs :
 - Rôle : traduire les exigences du **PRD (Phase 2)** en représentations techniques compréhensibles par les équipes produit/tech/clinique.
 - Dépendances :
   - Le PRD fixe le “quoi” (FR/NFR) ;
-  - L’architecture fixe le “avec quoi” (Angular/Spring Boot/PostgreSQL, modules, sécurité, intégrations) ;
+  - L’architecture fixe le “avec quoi” (React/Django/PostgreSQL, Django REST Framework, sécurité Django/JWT/OIDC, intégrations) ;
   - L’UML Design fixe le “comment” (scénarios, interactions, modèle métier), sans présumer des détails de code.
 
 ## 3) Vue d’ensemble des diagrammes
@@ -157,7 +157,7 @@ DB --> BE : Confirmation
 ### 5.3 Points clés de conception
 - **Front/Back séparés** : le Frontend ne calcule pas les scores, il orchestre l’UX.
 - **Scoring** : isolé (AI Module), facilitant l’évolution (service externe ou moteur interne).
-- **Traçabilité** : la validation/correction doit générer une trace d’audit (exigence PRD).
+- **Traçabilité** : la consultation pré‑anesthésique, les corrections et la décision (autoriser / examens / avis / récuser) doivent générer une trace d’audit (exigence PRD).
 - **Données** : le stockage inclut réponses + scores (et potentiellement “alertes potentielles”).
 
 ## 6) Sequence Diagram Per‑op — explication du flux

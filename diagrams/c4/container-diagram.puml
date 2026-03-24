@@ -16,9 +16,9 @@ System_Ext(auth, "Auth Service", "OIDC / JWT")
 
 System_Boundary(dai, "DAI") {
 
-  Container(frontend, "Frontend Web", "Angular", "Interface utilisateur web pour pré-op, per-op, post-op et administration")
+  Container(frontend, "Frontend Web", "React", "Interface utilisateur web pour pré-op, per-op, post-op et administration")
   
-  Container(api, "Backend API", "Spring Boot", "Expose les API REST, applique la logique métier, gère sécurité, alertes et audit")
+  Container(api, "Backend API", "Django REST Framework", "Expose les API REST, applique la logique métier, gère sécurité, alertes et audit")
 
   ContainerDb(db, "Database", "PostgreSQL", "Stocke patients, dossiers anesthésie, scores, constantes, événements, alertes et audit")
 
