@@ -220,6 +220,14 @@ Le modèle de classes UML existant (Patient, AnesthesiaCase, PreOpQuestionnaire,
 - MVP : moteur de scoring (interne ou service externe) appelé via API.
 - Évolutions : détection anomalies avancée, recommandations — sous gouvernance clinique.
 
+## Architecture d’interopérabilité et hybridation
+Le système est conçu pour évoluer vers un DMI hybride intégrant :
+- interopérabilité SIH / HIE via HL7 v2 / FHIR / IHE,
+- ingestion biomédicale normalisée,
+- streaming temps réel,
+- téléconsultation sécurisée,
+- intégration future d’agents IA via MCP.
+
 ## 9) Diagrammes C4 (Context / Container)
 
 ### 9.1 C4 — System Context

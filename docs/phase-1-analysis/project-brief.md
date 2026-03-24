@@ -38,6 +38,7 @@ En contexte périopératoire, la donnée est :
 DAI répond à la nécessité de **centraliser** le dossier d’anesthésie et de **réduire les risques** liés à la saisie manuelle, aux informations incomplètes et à l’absence de consolidation temps réel.
 
 ## 3) Vision
+Le système cible un DMI d’anesthésie hybride, combinant prise en charge présentielle au bloc et en SSPI avec des usages décentralisés de télémédecine (téléconsultation pré-anesthésique, télé-expertise, télésurveillance), dans un cadre d’interopérabilité basé sur HL7/FHIR/IHE et de sécurité by design.
 Mettre à disposition des équipes d’anesthésie une plateforme unique, fiable et intégrée qui :
 - accompagne la préparation pré‑opératoire (questionnaire + scores + points d’attention),
 - supporte le suivi per‑opératoire (constantes, événements, alertes),

@@ -47,6 +47,8 @@ Pour limiter le couplage, chaque module suit une structure cohérente :
 - Les modules “métier” (pré‑op, per‑op, post‑op…) **dépendent** du noyau dossier (case) et du patient.
 - Le module **audit** est transversal (appelé par les autres modules), mais **ne dépend pas** d’eux.
 - Le module **integration** expose des interfaces/clients ; il ne porte pas de logique métier du dossier.
+- Les modules **interop**, **streaming**, **telemedicine** et **ai_agent** exposent des adaptateurs/canaux et ne portent pas la logique métier du dossier.
+- Le module **security_compliance** porte des règles transverses (conformité locale, consentement, traçabilité) et n’expose pas de logique métier du dossier.
 - Le module **auth** (authentification Django + JWT/OIDC, RBAC) est transversal pour la couche API ; la logique métier ne “connaît” l’utilisateur qu’au travers d’un contexte minimal (ex. `currentUserId`).
 
 ### 3.4 Conventions techniques recommandées
@@ -72,6 +74,11 @@ La liste ci-dessous est alignée sur l’architecture (modules métier principau
 | settings | Paramètres (seuils, protocoles, templates) | FR-23 |
 | audit | Audit actions critiques (append-only) | NFR / sécurité + FR transverses |
 | integration | SIH/DPI, services IA, gateway biomédical | intégrations (à préciser) |
+| interop | Adaptateurs HL7/FHIR/IHE (SIH/HIE) | NFR interop + intégration SIH/HIE |
+| telemedicine | Téléconsultation, télé-expertise, télésurveillance | exigences télémédecine (P2) |
+| streaming | Diffusion temps réel des constantes et événements | NFR temps réel + per‑op/post‑op |
+| security_compliance | Audit renforcé, consentement, traçabilité, règles locales | NFR sécurité & conformité |
+| ai_agent | Intégration MCP, outils IA contrôlés | IA gouvernée + extensibilité IA |
 | common (support) | erreurs, types partagés, pagination, temps | support technique |
 
 ## 5) Responsabilités de chaque module
@@ -118,6 +125,27 @@ La liste ci-dessous est alignée sur l’architecture (modules métier principau
 - Adaptateurs SIH/DPI (identité patient, documents), IA (scoring/recommandations), biomédical (gateway).
 - Mapping, retries, gestion d’erreurs, journalisation technique.
 
+### interop
+- Adaptateurs et mapping HL7 v2 / FHIR.
+- Gestion des profils IHE (à préciser) via configurations et conformance checks minimaux.
+- Journalisation technique (corrélation, erreurs, rejets) et traçabilité des échanges.
+
+### telemedicine
+- Gestion des téléconsultations pré‑anesthésiques (planification, session, compte rendu) selon périmètre retenu.
+- Support télé‑expertise et télésurveillance (périmètre à cadrer), avec audit des accès.
+
+### streaming
+- Canal de diffusion quasi temps réel pour constantes et événements (SSE/WebSocket selon phase, sans figer l’implémentation ici).
+- Normalisation des messages de diffusion et gestion du mode dégradé (perte de flux).
+
+### security_compliance
+- Politique de traçabilité renforcée (événements sensibles), conservation et règles locales (à paramétrer).
+- Gestion du consentement (si requis par l’établissement) et exposition d’un statut de conformité aux modules métier.
+
+### ai_agent
+- Intégration future d’agents/outils IA via MCP, avec contrôle d’accès, journalisation des appels, et séparation recommandation/décision.
+- Registry minimal des “tools” IA autorisés (feature flags / gouvernance).
+
 ## 6) Relations entre modules
 ### 6.1 Dépendances fonctionnelles (résumé)
 - `case` est le **pivot** : `preop`, `perop`, `postop`, `alert`, `report` s’attachent à un dossier.
@@ -153,6 +181,11 @@ Recommandation (exemple) :
   - `settings/`
   - `audit/` (API facultative selon périmètre)
   - `integration/`
+  - `interop/`
+  - `telemedicine/`
+  - `streaming/`
+  - `security_compliance/`
+  - `ai_agent/`
 
 Structure interne (recommandée) par app :
 - `api/` : `urls.py`, `views.py`/`viewsets.py`, `serializers.py`, `permissions.py`

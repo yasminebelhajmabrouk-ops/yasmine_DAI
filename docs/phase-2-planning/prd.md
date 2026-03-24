@@ -68,6 +68,7 @@ Inclut au minimum :
 ### 5.3 Évolutions (P2)
 - Temps réel avancé (WebSocket), monitoring enrichi.
 - IA élargie (recommandations / anomalies avancées) avec gouvernance clinique.
+- Télémédecine : téléconsultation pré‑anesthésique et télé‑expertise.
 
 ### 5.4 Hors périmètre (OUT)
 - Dossier médical global hors anesthésie.
@@ -251,6 +252,24 @@ Les exigences ci‑dessous reprennent la base L2 (EF‑xx) et les rendent testab
 - **NFR-14 (P0)** : Git/PR/traçabilité.
 - **NFR-15 (P1)** : logs + supervision.
 
+### 8.6 Exigences transverses (compléments)
+
+#### Interopérabilité
+- **NFR-16 (P0)** : le système doit être conçu pour intégrer des échanges avec SIH/DPI selon des standards de santé (HL7 v2, HL7 FHIR, profils IHE à préciser).
+
+#### Temps réel
+- **NFR-17 (P0)** : le système doit supporter un flux quasi temps réel des constantes biomédicales.
+- **NFR-18 (P0)** : une architecture de diffusion temps réel (polling/SSE/WebSocket selon phase) doit être prévue.
+
+#### Télémédecine
+- **NFR-19 (P2)** : le système doit préparer la téléconsultation pré‑anesthésique et la télé‑expertise.
+
+#### Sécurité & conformité
+- **NFR-20 (P0)** : le système doit intégrer le chiffrement, l’audit, la gestion des identités et la conformité locale des données de santé.
+
+#### IA gouvernée
+- **NFR-21 (P1)** : les usages IA doivent être contrôlés, auditables et soumis à validation clinique.
+
 ## 9) Données & modèle questionnaire/scoring (références)
 Le modèle métier questionnaire/scores doit garantir :
 - sections structurées (identité, antécédents, allergies, traitements, capacité fonctionnelle, SAOS, etc.),
@@ -261,7 +280,9 @@ Le modèle métier questionnaire/scores doit garantir :
 ## 10) Dépendances & décisions à verrouiller
 - Dispositifs biomédicaux : liste, protocoles, formats.
 - SIH/DPI : identité patient, admissions, documents.
+- Standards d’interopérabilité : HL7 v2 / HL7 FHIR, profils IHE à préciser.
 - Politique sécurité : SSO/MFA, exigences audit et conservation.
+- Modalités de diffusion temps réel (polling/SSE/WebSocket) selon phase et contexte établissement.
 - Seuils/protocoles cliniques pour alertes.
 
 ## 11) Risques
@@ -311,5 +332,5 @@ Le modèle métier questionnaire/scores doit garantir :
 - EF-23 → FR-23
 
 ### NFR
-- NFR-01..NFR-15 → Section 8
+- NFR-01..NFR-21 → Section 8
 
