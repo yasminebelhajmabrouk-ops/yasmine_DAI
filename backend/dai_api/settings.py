@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'patient',
     'casefile',
     'audit',
+    'preop',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
