@@ -1,10 +1,27 @@
 from rest_framework import serializers
 
 from .models import (
+    QuestionTemplate,
     PreOpQuestionnaire,
     PreOpQuestionnaireResponse,
     ClinicalScore,
 )
+class QuestionTemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionTemplate
+        fields = [
+            "id",
+            "section",
+            "question_code",
+            "label_fr",
+            "label_ar",
+            "answer_type",
+            "is_required",
+            "used_for_scores",
+            "is_active",
+            "created_at",
+        ]
+        read_only_fields = ["id", "created_at"]
 
 
 class PreOpQuestionnaireResponseSerializer(serializers.ModelSerializer):
@@ -58,3 +75,8 @@ class PreOpQuestionnaireSerializer(serializers.ModelSerializer):
             "responses",
         ]
         read_only_fields = ["id", "case_id", "created_at", "updated_at"]
+
+class PreOpQuestionnaireFormSerializer(serializers.Serializer):
+    questionnaire = PreOpQuestionnaireSerializer()
+    questions = QuestionTemplateSerializer(many=True)
+    responses = PreOpQuestionnaireResponseSerializer(many=True)

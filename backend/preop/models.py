@@ -66,6 +66,28 @@ class PreOpQuestionnaire(models.Model):
     def __str__(self):
         return f"PreOp Questionnaire {self.id} - {self.anesthesia_case_id}"
 
+class QuestionTemplate(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    section = models.CharField(max_length=100)
+    question_code = models.CharField(max_length=100, unique=True)
+    label_fr = models.CharField(max_length=255)
+    label_ar = models.CharField(max_length=255, blank=True)
+    answer_type = models.CharField(
+        max_length=20,
+        choices=AnswerType.choices,
+        default=AnswerType.TEXT,
+    )
+    is_required = models.BooleanField(default=False)
+    used_for_scores = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "question_templates"
+        ordering = ["section", "question_code"]
+
+    def __str__(self):
+        return f"{self.section} - {self.question_code}"
 
 class PreOpQuestionnaireResponse(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
