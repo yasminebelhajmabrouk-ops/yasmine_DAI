@@ -8,7 +8,15 @@ def _normalize_answer(value: str) -> str:
 
 
 def _is_true(value: str) -> bool:
-    return _normalize_answer(value) in {"true", "yes", "1", "oui", "نعم", "always", "toujours"}
+    return _normalize_answer(value) in {
+        "true",
+        "yes",
+        "1",
+        "oui",
+        "نعم",
+        "always",
+        "toujours",
+    }
 
 
 def _to_float(value: str):
@@ -41,18 +49,20 @@ def compute_duke(response_map: Dict[str, str]) -> dict:
             },
         }
 
+    # Values aligned with the score reference document
     activity_weights = {
-        "self_care": 1.5,
-        "walk_inside": 2.0,
-        "walk_200m": 2.5,
-        "climb_stairs": 4.0,
-        "light_housework": 2.5,
-        "moderate_housework": 3.5,
-        "heavy_housework": 5.5,
-        "gardening": 4.5,
-        "moderate_recreation": 6.0,
-        "run_short_distance": 8.0,
-        "intense_sport": 8.0,
+        "self_care": 2.75,
+        "walk_inside": 1.75,
+        "walk_200m": 2.75,
+        "climb_stairs": 5.50,
+        "run_short_distance": 8.00,
+        "light_housework": 2.70,
+        "moderate_housework": 3.50,
+        "heavy_housework": 8.00,
+        "gardening": 4.50,
+        "sexual_activity": 5.25,
+        "moderate_recreation": 6.00,
+        "intense_sport": 7.50,
     }
 
     best_mets = 0.0
@@ -87,7 +97,13 @@ def compute_stop_bang(response_map: Dict[str, str]) -> dict:
     score = 0
     matched = []
 
-    if _normalize_answer(response_map.get("snoring", "")) in {"always", "toujours", "true", "yes", "1"}:
+    if _normalize_answer(response_map.get("snoring", "")) in {
+        "always",
+        "toujours",
+        "true",
+        "yes",
+        "1",
+    }:
         score += 1
         matched.append("snoring")
 
@@ -119,6 +135,8 @@ def compute_stop_bang(response_map: Dict[str, str]) -> dict:
         score += 1
         matched.append("age_over_50")
 
+    # Current seed has female_gender but not male_gender.
+    # Support both if data exists.
     if _is_true(response_map.get("male_gender", "")):
         score += 1
         matched.append("male_gender")
@@ -129,6 +147,7 @@ def compute_stop_bang(response_map: Dict[str, str]) -> dict:
         "score_details": {
             "positive_items": matched,
             "bmi": bmi,
+            "note": "neck circumference and male sex may be undercounted if not collected",
         },
     }
 
@@ -148,9 +167,9 @@ def compute_apfel(response_map: Dict[str, str]) -> dict:
         score += 1
         matched.append("non_smoker")
 
-    if _is_true(response_map.get("history_ponv", "")):
+    if _is_true(response_map.get("history_ponv", "")) or _is_true(response_map.get("motion_sickness", "")):
         score += 1
-        matched.append("history_ponv")
+        matched.append("history_ponv_or_motion_sickness")
 
     if _is_true(response_map.get("postop_opioids", "")):
         score += 1
