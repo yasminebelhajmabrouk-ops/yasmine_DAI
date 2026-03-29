@@ -6,6 +6,8 @@ from .models import (
     PreOpQuestionnaireResponse,
     ClinicalScore,
 )
+
+
 class QuestionTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionTemplate
@@ -39,7 +41,51 @@ class PreOpQuestionnaireResponseSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "section",
+            "question_label_fr",
+            "question_label_ar",
+            "answer_type",
+            "created_at",
+            "updated_at",
+        ]
+
+    def validate_question_code(self, value):
+        if not QuestionTemplate.objects.filter(
+            question_code=value,
+            is_active=True,
+        ).exists():
+            raise serializers.ValidationError("Invalid or inactive question_code.")
+        return value
+
+    def create(self, validated_data):
+        question_code = validated_data["question_code"]
+        template = QuestionTemplate.objects.get(
+            question_code=question_code,
+            is_active=True,
+        )
+
+        validated_data["section"] = template.section
+        validated_data["question_label_fr"] = template.label_fr
+        validated_data["question_label_ar"] = template.label_ar
+        validated_data["answer_type"] = template.answer_type
+
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        question_code = validated_data.get("question_code", instance.question_code)
+        template = QuestionTemplate.objects.get(
+            question_code=question_code,
+            is_active=True,
+        )
+
+        validated_data["section"] = template.section
+        validated_data["question_label_fr"] = template.label_fr
+        validated_data["question_label_ar"] = template.label_ar
+        validated_data["answer_type"] = template.answer_type
+
+        return super().update(instance, validated_data)
 
 
 class ClinicalScoreSerializer(serializers.ModelSerializer):
@@ -75,6 +121,7 @@ class PreOpQuestionnaireSerializer(serializers.ModelSerializer):
             "responses",
         ]
         read_only_fields = ["id", "case_id", "created_at", "updated_at"]
+
 
 class PreOpQuestionnaireFormSerializer(serializers.Serializer):
     questionnaire = PreOpQuestionnaireSerializer()
