@@ -49,7 +49,6 @@ def compute_duke(response_map: Dict[str, str]) -> dict:
             },
         }
 
-    # Values aligned with the score reference document
     activity_weights = {
         "self_care": 2.75,
         "walk_inside": 1.75,
@@ -135,8 +134,11 @@ def compute_stop_bang(response_map: Dict[str, str]) -> dict:
         score += 1
         matched.append("age_over_50")
 
-    # Current seed has female_gender but not male_gender.
-    # Support both if data exists.
+    neck_circumference = _to_float(response_map.get("neck_circumference_cm"))
+    if neck_circumference is not None and neck_circumference > 40:
+        score += 1
+        matched.append("neck_circumference_over_40")
+
     if _is_true(response_map.get("male_gender", "")):
         score += 1
         matched.append("male_gender")
@@ -147,7 +149,7 @@ def compute_stop_bang(response_map: Dict[str, str]) -> dict:
         "score_details": {
             "positive_items": matched,
             "bmi": bmi,
-            "note": "neck circumference and male sex may be undercounted if not collected",
+            "neck_circumference_cm": neck_circumference,
         },
     }
 
@@ -202,6 +204,175 @@ def compute_nyha(response_map: Dict[str, str]) -> dict:
     }
 
 
+# =========================
+# LEE / RCRI
+# =========================
+def compute_lee(response_map: Dict[str, str]) -> dict:
+    score = 0
+    matched = []
+
+    if _is_true(response_map.get("high_risk_surgery", "")):
+        score += 1
+        matched.append("high_risk_surgery")
+
+    if _is_true(response_map.get("ischemic_heart_disease", "")):
+        score += 1
+        matched.append("ischemic_heart_disease")
+
+    if _is_true(response_map.get("heart_failure", "")):
+        score += 1
+        matched.append("heart_failure")
+
+    if _is_true(response_map.get("stroke_history", "")):
+        score += 1
+        matched.append("stroke_history")
+
+    if _is_true(response_map.get("diabetes_on_insulin", "")):
+        score += 1
+        matched.append("diabetes_on_insulin")
+
+    creatinine = _to_float(response_map.get("creatinine_mg_dl"))
+    if creatinine is not None and creatinine > 2.0:
+        score += 1
+        matched.append("creatinine_over_2")
+
+    return {
+        "score_type": ScoreType.LEE,
+        "score_value": str(score),
+        "score_details": {
+            "positive_items": matched,
+            "creatinine_mg_dl": creatinine,
+        },
+    }
+
+
+# =========================
+# CHA2DS2-VASc
+# =========================
+def compute_cha2ds2_vasc(response_map: Dict[str, str]) -> dict:
+    score = 0
+    matched = []
+
+    if _is_true(response_map.get("heart_failure", "")):
+        score += 1
+        matched.append("heart_failure")
+
+    if _is_true(response_map.get("hypertension", "")):
+        score += 1
+        matched.append("hypertension")
+
+    age = _to_float(response_map.get("age"))
+    if age is not None:
+        if age >= 75:
+            score += 2
+            matched.append("age_75_or_more")
+        elif 65 <= age <= 74:
+            score += 1
+            matched.append("age_65_to_74")
+
+    if _is_true(response_map.get("diabetes", "")):
+        score += 1
+        matched.append("diabetes")
+
+    if _is_true(response_map.get("stroke_history", "")):
+        score += 2
+        matched.append("stroke_history")
+
+    if _is_true(response_map.get("vascular_disease", "")):
+        score += 1
+        matched.append("vascular_disease")
+
+    if _is_true(response_map.get("female_gender", "")):
+        score += 1
+        matched.append("female_gender")
+
+    return {
+        "score_type": ScoreType.CHA2DS2_VASC,
+        "score_value": str(score),
+        "score_details": {
+            "positive_items": matched,
+            "age": age,
+        },
+    }
+
+
+# =========================
+# ARISCAT
+# =========================
+def compute_ariscat(response_map: Dict[str, str]) -> dict:
+    score = 0
+    matched = []
+
+    spo2 = _to_float(response_map.get("preop_spo2"))
+    if spo2 is not None:
+        if spo2 <= 90:
+            score += 24
+            matched.append("spo2_90_or_less")
+        elif 91 <= spo2 <= 95:
+            score += 8
+            matched.append("spo2_91_95")
+
+    age = _to_float(response_map.get("age"))
+    if age is not None:
+        if age > 80:
+            score += 16
+            matched.append("age_over_80")
+        elif 51 <= age <= 80:
+            score += 3
+            matched.append("age_51_80")
+
+    if _is_true(response_map.get("recent_respiratory_infection", "")):
+        score += 17
+        matched.append("recent_respiratory_infection")
+
+    hb = _to_float(response_map.get("preop_hb"))
+    if hb is not None and hb <= 10:
+        score += 11
+        matched.append("hb_10_or_less")
+
+    incision_site = _normalize_answer(response_map.get("surgical_incision_site", ""))
+    if incision_site in {"thoracic", "intrathoracic", "intra-thoracique", "intrathoracique"}:
+        score += 24
+        matched.append("intrathoracic_incision")
+    elif incision_site in {"upper_abdominal", "abdominale_superieure", "abdominale supérieure"}:
+        score += 15
+        matched.append("upper_abdominal_incision")
+
+    duration = _to_float(response_map.get("surgery_duration_hours"))
+    if duration is not None:
+        if duration > 3:
+            score += 23
+            matched.append("duration_over_3h")
+        elif 2 <= duration <= 3:
+            score += 16
+            matched.append("duration_2_to_3h")
+
+    if _is_true(response_map.get("urgent_surgery", "")):
+        score += 8
+        matched.append("urgent_surgery")
+
+    if score < 26:
+        risk_level = "LOW"
+    elif score <= 44:
+        risk_level = "INTERMEDIATE"
+    else:
+        risk_level = "HIGH"
+
+    return {
+        "score_type": ScoreType.ARISCAT,
+        "score_value": str(score),
+        "score_details": {
+            "positive_items": matched,
+            "risk_level": risk_level,
+            "preop_spo2": spo2,
+            "preop_hb": hb,
+            "age": age,
+            "surgery_duration_hours": duration,
+            "surgical_incision_site": incision_site,
+        },
+    }
+
+
 def compute_placeholder(score_type: str) -> dict:
     return {
         "score_type": score_type,
@@ -218,9 +389,9 @@ def compute_all_scores(questionnaire) -> list:
         compute_stop_bang(response_map),
         compute_apfel(response_map),
         compute_nyha(response_map),
-        compute_placeholder(ScoreType.LEE),
+        compute_lee(response_map),
         compute_placeholder(ScoreType.GOLD),
         compute_placeholder(ScoreType.CHILD_PUGH),
-        compute_placeholder(ScoreType.CHA2DS2_VASC),
-        compute_placeholder(ScoreType.ARISCAT),
+        compute_cha2ds2_vasc(response_map),
+        compute_ariscat(response_map),
     ]
