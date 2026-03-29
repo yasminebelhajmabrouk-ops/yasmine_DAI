@@ -127,3 +127,24 @@ class PreOpQuestionnaireFormSerializer(serializers.Serializer):
     questionnaire = PreOpQuestionnaireSerializer()
     questions = QuestionTemplateSerializer(many=True)
     responses = PreOpQuestionnaireResponseSerializer(many=True)
+
+class BulkQuestionnaireResponseItemSerializer(serializers.Serializer):
+    question_code = serializers.CharField(max_length=100)
+    answer_value = serializers.CharField(allow_blank=True, required=False, default="")
+
+    def validate_question_code(self, value):
+        if not QuestionTemplate.objects.filter(
+            question_code=value,
+            is_active=True,
+        ).exists():
+            raise serializers.ValidationError("Invalid or inactive question_code.")
+        return value
+
+
+class BulkQuestionnaireResponseSaveSerializer(serializers.Serializer):
+    responses = BulkQuestionnaireResponseItemSerializer(many=True)
+
+    def validate_responses(self, value):
+        if not value:
+            raise serializers.ValidationError("responses list cannot be empty.")
+        return value

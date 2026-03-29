@@ -16,7 +16,9 @@ from .serializers import (
     PreOpQuestionnaireResponseSerializer,
     ClinicalScoreSerializer,
     PreOpQuestionnaireFormSerializer,
+    BulkQuestionnaireResponseSaveSerializer,
 )
+
 from .scoring_engine import compute_all_scores
 
 
@@ -91,6 +93,47 @@ class PreOpQuestionnaireViewSet(viewsets.ModelViewSet):
             }
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=["post"], url_path="save-responses")
+    def save_responses(self, request, pk=None):
+        questionnaire = self.get_object()
+
+        serializer = BulkQuestionnaireResponseSaveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        saved_responses = []
+
+        for item in serializer.validated_data["responses"]:
+            template = QuestionTemplate.objects.get(
+                question_code=item["question_code"],
+                is_active=True,
+            )
+
+            response, _ = PreOpQuestionnaireResponse.objects.update_or_create(
+                questionnaire=questionnaire,
+                question_code=template.question_code,
+                defaults={
+                    "section": template.section,
+                    "question_label_fr": template.label_fr,
+                    "question_label_ar": template.label_ar,
+                    "answer_type": template.answer_type,
+                    "answer_value": item.get("answer_value", ""),
+                },
+            )
+            saved_responses.append(response)
+
+        create_audit_log(
+            action="SAVE_RESPONSES",
+            entity_type="PreOpQuestionnaire",
+            entity_id=str(questionnaire.id),
+            details={
+                "anesthesia_case_id": str(questionnaire.anesthesia_case.id),
+                "saved_count": len(saved_responses),
+            },
+        )
+
+        output_serializer = PreOpQuestionnaireResponseSerializer(saved_responses, many=True)
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
 
 
 class PreOpQuestionnaireResponseViewSet(viewsets.ModelViewSet):
