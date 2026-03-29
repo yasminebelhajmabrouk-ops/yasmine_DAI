@@ -380,6 +380,170 @@ def compute_placeholder(score_type: str) -> dict:
         "score_details": {"status": "algorithm not implemented yet"},
     }
 
+def compute_gold(response_map: Dict[str, str]) -> dict:
+    fev1 = _to_float(response_map.get("fev1_percent"))
+    exacerbations = _to_float(response_map.get("copd_exacerbations_per_year"))
+    hospitalized = _is_true(response_map.get("copd_hospitalization_last_year", ""))
+    mmrc = _to_float(response_map.get("mmrc_grade"))
+    cat = _to_float(response_map.get("cat_score"))
+
+    if fev1 is None:
+        return {
+            "score_type": ScoreType.GOLD,
+            "score_value": "UNKNOWN",
+            "score_details": {"reason": "missing fev1_percent"},
+        }
+
+    if fev1 >= 80:
+        gold_grade = "GOLD 1"
+    elif 50 <= fev1 <= 79:
+        gold_grade = "GOLD 2"
+    elif 30 <= fev1 <= 49:
+        gold_grade = "GOLD 3"
+    else:
+        gold_grade = "GOLD 4"
+
+    high_exacerbation_risk = False
+    if exacerbations is not None and exacerbations >= 2:
+        high_exacerbation_risk = True
+    if hospitalized:
+        high_exacerbation_risk = True
+
+    symptomatic = False
+    symptom_source = None
+    if mmrc is not None:
+        symptomatic = mmrc >= 2
+        symptom_source = "mmrc"
+    elif cat is not None:
+        symptomatic = cat >= 10
+        symptom_source = "cat"
+
+    if high_exacerbation_risk and symptomatic:
+        gold_group = "D"
+    elif high_exacerbation_risk and not symptomatic:
+        gold_group = "C"
+    elif not high_exacerbation_risk and symptomatic:
+        gold_group = "B"
+    else:
+        gold_group = "A"
+
+    return {
+        "score_type": ScoreType.GOLD,
+        "score_value": gold_grade,
+        "score_details": {
+            "gold_grade": gold_grade,
+            "gold_group": gold_group,
+            "fev1_percent": fev1,
+            "copd_exacerbations_per_year": exacerbations,
+            "copd_hospitalization_last_year": hospitalized,
+            "mmrc_grade": mmrc,
+            "cat_score": cat,
+            "symptom_source": symptom_source,
+        },
+    }
+
+def compute_child_pugh(response_map: Dict[str, str]) -> dict:
+    bilirubin = _to_float(response_map.get("bilirubin_umol_l"))
+    albumin = _to_float(response_map.get("albumin_g_l"))
+    inr = _to_float(response_map.get("inr"))
+    ascites = _normalize_answer(response_map.get("ascites", ""))
+    encephalopathy = _normalize_answer(response_map.get("encephalopathy_grade", ""))
+
+    missing = []
+    if bilirubin is None:
+        missing.append("bilirubin_umol_l")
+    if albumin is None:
+        missing.append("albumin_g_l")
+    if inr is None:
+        missing.append("inr")
+    if not ascites:
+        missing.append("ascites")
+    if not encephalopathy:
+        missing.append("encephalopathy_grade")
+
+    if missing:
+        return {
+            "score_type": ScoreType.CHILD_PUGH,
+            "score_value": "UNKNOWN",
+            "score_details": {"reason": "missing input", "missing_fields": missing},
+        }
+
+    # Bilirubin
+    if bilirubin < 35:
+        bilirubin_points = 1
+    elif 35 <= bilirubin <= 50:
+        bilirubin_points = 2
+    else:
+        bilirubin_points = 3
+
+    # Albumin
+    if albumin > 35:
+        albumin_points = 1
+    elif 28 <= albumin <= 35:
+        albumin_points = 2
+    else:
+        albumin_points = 3
+
+    # INR
+    if inr < 1.7:
+        inr_points = 1
+    elif 1.7 <= inr <= 2.3:
+        inr_points = 2
+    else:
+        inr_points = 3
+
+    # Ascites
+    if ascites in {"absent", "none", "no", "non", "لا"}:
+        ascites_points = 1
+    elif ascites in {"moderate", "moderee", "modérée", "وسطة", "متوسطة"}:
+        ascites_points = 2
+    else:
+        ascites_points = 3
+
+    # Encephalopathy
+    if encephalopathy in {"absent", "none", "no", "non", "لا"}:
+        encephalopathy_points = 1
+    elif encephalopathy in {"grade_i_ii", "i_ii", "1_2", "moderate", "moderee", "modérée"}:
+        encephalopathy_points = 2
+    else:
+        encephalopathy_points = 3
+
+    total = (
+        bilirubin_points
+        + albumin_points
+        + inr_points
+        + ascites_points
+        + encephalopathy_points
+    )
+
+    if total <= 6:
+        child_class = "A"
+    elif total <= 9:
+        child_class = "B"
+    else:
+        child_class = "C"
+
+    return {
+        "score_type": ScoreType.CHILD_PUGH,
+        "score_value": child_class,
+        "score_details": {
+            "total_points": total,
+            "child_pugh_class": child_class,
+            "bilirubin_umol_l": bilirubin,
+            "albumin_g_l": albumin,
+            "inr": inr,
+            "ascites": ascites,
+            "encephalopathy_grade": encephalopathy,
+            "component_points": {
+                "bilirubin": bilirubin_points,
+                "albumin": albumin_points,
+                "inr": inr_points,
+                "ascites": ascites_points,
+                "encephalopathy": encephalopathy_points,
+            },
+        },
+    }
+
 
 def compute_all_scores(questionnaire) -> list:
     response_map = build_response_map(questionnaire)
@@ -390,8 +554,8 @@ def compute_all_scores(questionnaire) -> list:
         compute_apfel(response_map),
         compute_nyha(response_map),
         compute_lee(response_map),
-        compute_placeholder(ScoreType.GOLD),
-        compute_placeholder(ScoreType.CHILD_PUGH),
+        compute_gold(response_map),
+        compute_child_pugh(response_map),
         compute_cha2ds2_vasc(response_map),
         compute_ariscat(response_map),
     ]
