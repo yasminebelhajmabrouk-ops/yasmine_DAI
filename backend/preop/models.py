@@ -35,6 +35,7 @@ class ScoreType(models.TextChoices):
     NYHA = "NYHA", "NYHA"
     CHA2DS2_VASC = "CHA2DS2_VASC", "CHA2DS2-VASc"
     ARISCAT = "ARISCAT", "ARISCAT"
+    ALDRETE = "ALDRETE", "Aldrete"
 
 
 class PreOpQuestionnaire(models.Model):
