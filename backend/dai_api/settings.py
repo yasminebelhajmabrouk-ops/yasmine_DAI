@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'casefile',
     'audit',
     'preop',
+    "perop",
+    "postop",
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
