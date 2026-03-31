@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from .models import AnesthesiaCase
+from .models import AnesthesiaCase, CaseStatus
 
 
 class AnesthesiaCaseSerializer(serializers.ModelSerializer):
-    patient_full_name = serializers.CharField(source="patient.__str__", read_only=True)
+    patient_full_name = serializers.SerializerMethodField()
 
     class Meta:
         model = AnesthesiaCase
@@ -20,3 +20,10 @@ class AnesthesiaCaseSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at", "patient_full_name"]
+
+    def get_patient_full_name(self, obj):
+        return str(obj.patient)
+
+
+class CaseStateTransitionSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=CaseStatus.choices)
