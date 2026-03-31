@@ -4,19 +4,20 @@ title DAI — Activity Diagram (Workflow global patient)
 start
 
 :Création / sélection patient;
-:Début parcours périopératoire;
+:Création dossier anesthésique;
 
 partition "Pré-op" {
   :Patient remplit questionnaire;
-  :Calcul automatique scores (ASA, RCRI, Apfel, Mallampati);
-  :Génération alertes potentielles;
+  :Enregistrement réponses;
+  :Calcul automatique scores;
   :Validation / correction par anesthésiste;
 }
 
 partition "Per-op (Bloc)" {
+  :Transition case -> PER_OP;
   :Démarrer session per-op;
-  :Acquisition constantes (temps réel);
-  :Enregistrement événements (médicaments/actes);
+  :Acquisition constantes;
+  :Enregistrement événements / médicaments;
   if (Anomalie détectée ?) then (Oui)
     :Déclencher alerte;
     :Acquittement + commentaire;
@@ -27,13 +28,20 @@ partition "Per-op (Bloc)" {
 }
 
 partition "Post-op (SSPI)" {
-  :Suivi SSPI;
-  :Évaluation douleur;
-  :Calcul score de sortie (Aldrete);
+  :Transition case -> POST_OP;
+  :Démarrer séjour SSPI;
+  :Saisir observation postop;
+  :Évaluer douleur;
+  :Calculer score Aldrete;
+  if (Aldrete >= 9 ?) then (Oui)
+    :READY_FOR_DISCHARGE;
+  else (Non)
+    :Poursuivre surveillance;
+  endif
+  :Fin séjour SSPI;
 }
 
 :Générer rapport anesthésie;
 :Archiver et rendre consultable;
-
 stop
 @enduml

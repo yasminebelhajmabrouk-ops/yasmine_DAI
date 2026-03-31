@@ -1,0 +1,50 @@
+@startuml
+title DAI — Sequence Diagram (Post-opératoire / SSPI)
+
+actor "Equipe SSPI" as SSPI
+participant "DAI Frontend (SSPI)" as FE
+participant "DAI Backend API" as BE
+participant "PostOp Module" as POSTOP
+database "DAI Database" as DB
+
+== Démarrage séjour SSPI ==
+SSPI -> FE : Ouvrir écran postop
+FE -> BE : StartPostOpStay(caseId)
+BE -> POSTOP : startStay(caseId)
+POSTOP -> DB : Create PostOpStay
+DB --> POSTOP : Stay active
+POSTOP --> BE : Stay started
+BE --> FE : StayReady
+
+== Observation postop ==
+SSPI -> FE : Saisir observation postop
+FE -> BE : POST observation
+BE -> POSTOP : saveObservation
+POSTOP -> DB : Save PostOpObservation
+DB --> POSTOP : Observation saved
+
+== Calcul Aldrete ==
+POSTOP -> POSTOP : compute Aldrete
+POSTOP -> DB : Save ClinicalScore(ALDRETE)
+DB --> POSTOP : Score saved
+POSTOP --> BE : Observation + score + readiness
+BE --> FE : Afficher score Aldrete
+
+== Consultation ==
+SSPI -> FE : Consulter score de sortie
+FE -> BE : GET /scores/aldrete
+BE -> POSTOP : getAldrete(caseId)
+POSTOP -> DB : Load latest observation + score
+DB --> POSTOP : Data
+POSTOP --> BE : Aldrete payload
+BE --> FE : Afficher score
+
+== Fin séjour ==
+SSPI -> FE : Terminer séjour SSPI
+FE -> BE : EndPostOpStay(caseId)
+BE -> POSTOP : endStay(caseId)
+POSTOP -> DB : Update stay ended
+DB --> POSTOP : OK
+POSTOP --> BE : Stay ended
+BE --> FE : Confirmation
+@enduml
