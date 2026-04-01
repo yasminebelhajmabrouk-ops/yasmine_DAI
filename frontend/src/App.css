@@ -1,0 +1,45 @@
+/* ═══════════════════════════════════════════════
+   DAI-BMAD App Layout Styles
+   ═══════════════════════════════════════════════ */
+
+.app-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+
+.page-container {
+  flex: 1;
+  position: relative;
+  overflow-y: auto;
+  background: radial-gradient(circle at 50% -20%, var(--accent-cyan-glow), transparent 70%);
+}
+
+/* Transitions for sub-elements */
+.main-content > header {
+  z-index: 1000;
+}
+
+/* Fixed container sizes for grids */
+.dashboard-content, 
+.preop-module {
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .page-container {
+     padding-bottom: 80px; /* Space for potentially mobile fixed elements */
+  }
+}

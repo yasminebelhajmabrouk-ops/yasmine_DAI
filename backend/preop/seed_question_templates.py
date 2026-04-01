@@ -25,6 +25,15 @@ QUESTIONS = [
     },
     {
         "section": "identity_context",
+        "question_code": "male_gender",
+        "label_fr": "Sexe Masculin",
+        "label_ar": "جنس ذكر",
+        "answer_type": AnswerType.BOOLEAN,
+        "is_required": True,
+        "used_for_scores": True,
+    },
+    {
+        "section": "identity_context",
         "question_code": "procedure_type",
         "label_fr": "Nature de l’acte",
         "label_ar": "نوع العملية",
@@ -34,9 +43,18 @@ QUESTIONS = [
     },
     {
         "section": "identity_context",
+        "question_code": "high_risk_surgery",
+        "label_fr": "Chirurgie à haut risque (ex: thoracique, abdominale supra-ombilicale)",
+        "label_ar": "جراحة عالية الخطورة",
+        "answer_type": AnswerType.BOOLEAN,
+        "is_required": False,
+        "used_for_scores": True,
+    },
+    {
+        "section": "identity_context",
         "question_code": "weight",
-        "label_fr": "Poids",
-        "label_ar": "الوزن",
+        "label_fr": "Poids (kg)",
+        "label_ar": "الوزن (كغ)",
         "answer_type": AnswerType.NUMBER,
         "is_required": False,
         "used_for_scores": True,
@@ -44,8 +62,8 @@ QUESTIONS = [
     {
         "section": "identity_context",
         "question_code": "height",
-        "label_fr": "Taille",
-        "label_ar": "الطول",
+        "label_fr": "Taille (cm)",
+        "label_ar": "الطول (سم)",
         "answer_type": AnswerType.NUMBER,
         "is_required": False,
         "used_for_scores": True,
@@ -56,9 +74,13 @@ QUESTIONS = [
     # =========================
     {"section": "medical_history", "question_code": "hypertension", "label_fr": "Hypertension artérielle", "label_ar": "ارتفاع ضغط الدم", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
     {"section": "medical_history", "question_code": "asthma", "label_fr": "Asthme", "label_ar": "الربو", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
-    {"section": "medical_history", "question_code": "stroke_history", "label_fr": "Accident vasculaire cérébral", "label_ar": "جلطة دماغية", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
+    {"section": "medical_history", "question_code": "history_ischemic_heart_disease", "label_fr": "Maladie cardiaque ischémique (Infarctus, Angine de poitrine)", "label_ar": "مرض القلب الإقفاري", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
+    {"section": "medical_history", "question_code": "history_congestive_heart_failure", "label_fr": "Insuffisance cardiaque congestive", "label_ar": "فشل القلب", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
+    {"section": "medical_history", "question_code": "history_cerebrovascular_disease", "label_fr": "Maladie cérébrovasculaire (AVC, AIT)", "label_ar": "أمراض الأوعية الدموية الدماغية", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
     {"section": "medical_history", "question_code": "diabetes", "label_fr": "Diabète", "label_ar": "السكري", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
+    {"section": "medical_history", "question_code": "diabetes_insulin", "label_fr": "Diabète insulinodépendant", "label_ar": "السكري المعتمد على الأنسولين", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
     {"section": "medical_history", "question_code": "renal_failure", "label_fr": "Insuffisance rénale", "label_ar": "قصور كلوي", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
+    {"section": "medical_history", "question_code": "creatinine", "label_fr": "Créatinine sérique (mg/dL ou µmol/L)", "label_ar": "الكرياتينين", "answer_type": AnswerType.NUMBER, "is_required": False, "used_for_scores": True},
     {"section": "medical_history", "question_code": "epilepsy", "label_fr": "Epilepsie", "label_ar": "الصرع", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
     {"section": "medical_history", "question_code": "dyslipidemia", "label_fr": "Dyslipidémie", "label_ar": "ارتفاع الدهون", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
     {"section": "medical_history", "question_code": "anemia", "label_fr": "Anémie", "label_ar": "فقر الدم", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
@@ -72,9 +94,9 @@ QUESTIONS = [
     # Dialysis
     # =========================
     {"section": "dialysis", "question_code": "dialysis_required", "label_fr": "Dialyse nécessaire", "label_ar": "هل يتطلب الغسيل الكلوي", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
-    {"section": "dialysis", "question_code": "dialysis_days", "label_fr": "Jours de dialyse", "label_ar": "أيام الغسيل الكلوي", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False},
+    {"section": "dialysis", "question_code": "dialysis_days", "label_fr": "Jours de dialyse", "label_ar": "أيام الغسيل الكلوي", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False, "choices": [{"value": "mon_wed_fri", "label_fr": "Lun / Mer / Ven", "label_ar": "الاثنين / الأربعاء / الجمعة"}, {"value": "tue_thu_sat", "label_fr": "Mar / Jeu / Sam", "label_ar": "الثلاثاء / الخميس / السبت"}]},
     {"section": "dialysis", "question_code": "av_fistula", "label_fr": "Fistule artério-veineuse", "label_ar": "ناسور وريدي شرياني", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
-    {"section": "dialysis", "question_code": "av_fistula_side", "label_fr": "Localisation de la fistule", "label_ar": "موقع الناسور", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False},
+    {"section": "dialysis", "question_code": "av_fistula_side", "label_fr": "Localisation de la fistule", "label_ar": "موقع الناسور", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False, "choices": [{"value": "left_arm", "label_fr": "Bras gauche", "label_ar": "الذراع الأيسر"}, {"value": "right_arm", "label_fr": "Bras droit", "label_ar": "الذراع الأيمن"}]},
 
     # =========================
     # Treatment
@@ -129,7 +151,7 @@ QUESTIONS = [
     # =========================
     # Sleep apnea / STOP-BANG
     # =========================
-    {"section": "sleep_apnea", "question_code": "snoring", "label_fr": "Ronflement", "label_ar": "الشخير", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": True},
+    {"section": "sleep_apnea", "question_code": "snoring", "label_fr": "Ronflement", "label_ar": "الشخير", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": True, "choices": [{"value": "never", "label_fr": "Jamais", "label_ar": "أبداً"}, {"value": "sometimes", "label_fr": "Parfois", "label_ar": "أحياناً"}, {"value": "always", "label_fr": "Toujours", "label_ar": "دائماً"}]},
     {"section": "sleep_apnea", "question_code": "observed_apnea", "label_fr": "Apnées observées", "label_ar": "انقطاع التنفس أثناء النوم", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
     {"section": "sleep_apnea", "question_code": "daytime_tiredness", "label_fr": "Somnolence / fatigue diurne", "label_ar": "النعاس أثناء النهار", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
 
@@ -141,10 +163,12 @@ QUESTIONS = [
     {"section": "cardio_symptoms", "question_code": "usual_blood_pressure", "label_fr": "Chiffres tensionnels habituels", "label_ar": "درجات ضغط الدم المعتادة", "answer_type": AnswerType.TEXT, "is_required": False, "used_for_scores": False},
 
     # =========================
-    # Dental / spine
+    # Dental / spine / airway
     # =========================
-    {"section": "airway_spine", "question_code": "dental_prosthesis", "label_fr": "Prothèse dentaire", "label_ar": "أسنان اصطناعية", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False},
+    {"section": "airway_spine", "question_code": "dental_prosthesis", "label_fr": "Prothèse dentaire", "label_ar": "أسنان اصطناعية", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False, "choices": [{"value": "none", "label_fr": "Aucune", "label_ar": "لا يوجد"}, {"value": "fixed", "label_fr": "Fixe", "label_ar": "طقم ثابت"}, {"value": "removable", "label_fr": "Amovible", "label_ar": "طقم متحرك"}]},
     {"section": "airway_spine", "question_code": "spine_problem", "label_fr": "Pathologie rachidienne", "label_ar": "مشاكل في العمود الفقري", "answer_type": AnswerType.TEXT, "is_required": False, "used_for_scores": False},
+    {"section": "airway_spine", "question_code": "mallampati_class", "label_fr": "Classe de Mallampati", "label_ar": "درجة مالامباتي", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": True, "choices": [{"value": "I", "label_fr": "Classe I", "label_ar": "الدرجة الأولى"}, {"value": "II", "label_fr": "Classe II", "label_ar": "الدرجة الثانية"}, {"value": "III", "label_fr": "Classe III", "label_ar": "الدرجة الثالثة"}, {"value": "IV", "label_fr": "Classe IV", "label_ar": "الدرجة الرابعة"}]},
+    {"section": "airway_spine", "question_code": "asa_physical_status", "label_fr": "Score ASA", "label_ar": "درجة ASA", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": True, "choices": [{"value": "I", "label_fr": "ASA I", "label_ar": "ASA I"}, {"value": "II", "label_fr": "ASA II", "label_ar": "ASA II"}, {"value": "III", "label_fr": "ASA III", "label_ar": "ASA III"}, {"value": "IV", "label_fr": "ASA IV", "label_ar": "ASA IV"}]},
 
     # =========================
     # Duke / activity profile
@@ -182,7 +206,7 @@ QUESTIONS = [
     # Peripheral arterial disease / walking pain
     # =========================
     {"section": "vascular", "question_code": "leg_pain_walking", "label_fr": "Douleur des jambes à la marche", "label_ar": "ألم أو تشنج في الساقين عند المشي", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
-    {"section": "vascular", "question_code": "leg_pain_distance", "label_fr": "Distance avant douleur", "label_ar": "بعد مسافة كم تبدأ الآلام", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False},
+    {"section": "vascular", "question_code": "leg_pain_distance", "label_fr": "Distance avant douleur", "label_ar": "بعد مسافة كم تبدأ الآلام", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False, "choices": [{"value": "less_50m", "label_fr": "< 50m", "label_ar": "أقل من 50 متر"}, {"value": "50_200m", "label_fr": "50-200m", "label_ar": "50-200 متر"}, {"value": "more_200m", "label_fr": "> 200m", "label_ar": "أكثر من 200 متر"}]},
 
     # =========================
     # Respiratory infection
@@ -201,7 +225,7 @@ QUESTIONS = [
     # =========================
     # Children
     # =========================
-    {"section": "children", "question_code": "birth_mode", "label_fr": "Mode de naissance", "label_ar": "ولادة طبيعية أو قيصرية", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False},
+    {"section": "children", "question_code": "birth_mode", "label_fr": "Mode de naissance", "label_ar": "ولادة طبيعية أو قيصرية", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": False, "choices": [{"value": "vaginal", "label_fr": "Vaginale", "label_ar": "ولادة طبيعية"}, {"value": "cesarean", "label_fr": "Césarienne", "label_ar": "عملية قيصرية"}]},
     {"section": "children", "question_code": "premature", "label_fr": "Prématuré", "label_ar": "الطفل المولود قبل أوانه", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
     {"section": "children", "question_code": "parental_consanguinity", "label_fr": "Parents apparentés", "label_ar": "هل للوالدين علاقة قرابة", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
     {"section": "children", "question_code": "hospitalized_after_birth", "label_fr": "Hospitalisation après naissance", "label_ar": "أقام بالمستشفى بعد الولادة", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},

@@ -14,6 +14,8 @@ class AnesthesiaCaseSerializer(serializers.ModelSerializer):
             "patient_full_name",
             "status",
             "surgery_type",
+            "decision",
+            "decision_notes",
             "scheduled_at",
             "notes",
             "created_at",

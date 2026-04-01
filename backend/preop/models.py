@@ -79,6 +79,7 @@ class QuestionTemplate(models.Model):
     )
     is_required = models.BooleanField(default=False)
     used_for_scores = models.BooleanField(default=False)
+    choices = models.JSONField(default=list, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

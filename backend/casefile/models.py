@@ -11,6 +11,13 @@ class CaseStatus(models.TextChoices):
     CLOSED = "CLOSED", "Closed"
 
 
+class AnesthesiaDecision(models.TextChoices):
+    AUTHORIZED = "AUTHORIZED", "Autoriser l’anesthésie"
+    EXAMS_REQUIRED = "EXAMS_REQUIRED", "Demander des examens complémentaires"
+    SPECIALIST_OPINION = "SPECIALIST_OPINION", "Demander un avis spécialisé"
+    REFUSED = "REFUSED", "Récuser l’anesthésie"
+
+
 class AnesthesiaCase(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     patient = models.ForeignKey(
@@ -24,6 +31,13 @@ class AnesthesiaCase(models.Model):
         default=CaseStatus.PRE_OP,
     )
     surgery_type = models.CharField(max_length=255)
+    decision = models.CharField(
+        max_length=30,
+        choices=AnesthesiaDecision.choices,
+        null=True,
+        blank=True,
+    )
+    decision_notes = models.TextField(blank=True)
     scheduled_at = models.DateTimeField(null=True, blank=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

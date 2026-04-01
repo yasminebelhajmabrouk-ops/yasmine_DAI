@@ -1,0 +1,73 @@
+.header {
+  height: var(--header-height);
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border-color);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.8px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-email-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--status-violet);
+  background: var(--accent-glow);
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+.header-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.header-btn:hover {
+  background: var(--bg-primary);
+  color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+.logout-btn-explicit {
+  color: var(--status-rose) !important;
+}
+
+.logout-btn-explicit:hover {
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
+}
+
+.divider-vertical {
+  width: 1px;
+  height: 24px;
+  background: var(--border-color);
+}

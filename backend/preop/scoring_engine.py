@@ -183,6 +183,52 @@ def compute_nyha(response_map: Dict[str, str]) -> dict:
     }
 
 
+# =========================
+# LEE / RCRI
+# =========================
+def compute_lee(response_map: Dict[str, str]) -> dict:
+    score = 0
+    matched = []
+
+    # Factors for Lee/RCRI
+    if _is_true(response_map.get("high_risk_surgery", "")):
+        score += 1
+        matched.append("high_risk_surgery")
+    if _is_true(response_map.get("history_ischemic_heart_disease", "")):
+        score += 1
+        matched.append("ischemic_heart_disease")
+    if _is_true(response_map.get("history_congestive_heart_failure", "")):
+        score += 1
+        matched.append("heart_failure")
+    if _is_true(response_map.get("history_cerebrovascular_disease", "")):
+        score += 1
+        matched.append("cerebrovascular_disease")
+    if _is_true(response_map.get("diabetes_insulin", "")):
+        score += 1
+        matched.append("insulin_dependent_diabetes")
+    if _to_float(response_map.get("creatinine", "")) and _to_float(response_map.get("creatinine", "")) > 170:
+        score += 1
+        matched.append("creatinine_over_170")
+
+    return {
+        "score_type": ScoreType.LEE,
+        "score_value": str(score),
+        "score_details": {"positive_items": matched},
+    }
+
+
+# =========================
+# MALLAMPATI & ASA
+# =========================
+def compute_direct_class(response_map: Dict[str, str], code: str, score_type: str) -> dict:
+    value = response_map.get(code, "UNKNOWN").upper()
+    return {
+        "score_type": score_type,
+        "score_value": value,
+        "score_details": {"method": "direct_input"},
+    }
+
+
 def compute_placeholder(score_type: str) -> dict:
     return {
         "score_type": score_type,
@@ -191,17 +237,44 @@ def compute_placeholder(score_type: str) -> dict:
     }
 
 
-def compute_all_scores(questionnaire) -> list:
-    response_map = build_response_map(questionnaire)
-
-    return [
+def compute_all_scores_from_map(response_map: Dict[str, str]) -> tuple:
+    scores = [
         compute_duke(response_map),
         compute_stop_bang(response_map),
         compute_apfel(response_map),
         compute_nyha(response_map),
-        compute_placeholder(ScoreType.LEE),
+        compute_lee(response_map),
+        compute_direct_class(response_map, "mallampati_class", "MALLAMPATI"),
+        compute_direct_class(response_map, "asa_physical_status", "ASA"),
         compute_placeholder(ScoreType.GOLD),
         compute_placeholder(ScoreType.CHILD_PUGH),
         compute_placeholder(ScoreType.CHA2DS2_VASC),
         compute_placeholder(ScoreType.ARISCAT),
     ]
+    
+    # Generate Alerts (Points of attention)
+    alerts = []
+    
+    # IMC Alert
+    weight = _to_float(response_map.get("weight"))
+    height_cm = _to_float(response_map.get("height"))
+    if weight and height_cm:
+        bmi = weight / ((height_cm/100)**2)
+        if bmi > 35:
+            alerts.append({"type": "BMI", "severity": "WARNING", "message": f"IMC élevé ({bmi:.1f})."})
+
+    # STOP-BANG Alert
+    stop_bang = next((s for s in scores if s["score_type"] == ScoreType.STOP_BANG), None)
+    if stop_bang and stop_bang["score_value"] != "UNKNOWN" and stop_bang["score_value"].isdigit() and int(stop_bang["score_value"]) >= 3:
+        alerts.append({"type": "OSAS", "severity": "WARNING", "message": "Risque SAOS modéré à élevé (STOP-BANG >= 3)."})
+
+    # Allergy Alert
+    if _is_true(response_map.get("drug_allergy", "")):
+        alerts.append({"type": "ALLERGY", "severity": "CRITICAL", "message": f"Allergie signalée: {response_map.get('drug_allergy_details', 'Non précisé')}."})
+    
+    return scores, alerts
+
+
+def compute_all_scores(questionnaire) -> list:
+    response_map = build_response_map(questionnaire)
+    return compute_all_scores_from_map(response_map)
