@@ -10,4 +10,5 @@ urlpatterns = [
     path("api/", include("audit.urls")),
     path("api/", include("perop.urls")),
     path("api/", include("postop.urls")),
+    path("api/", include("alert.urls")),
 ]

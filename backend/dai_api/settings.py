@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'preop',
     "perop",
     "postop",
+    "alert",
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
