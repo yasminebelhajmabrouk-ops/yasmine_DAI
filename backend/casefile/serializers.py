@@ -1,6 +1,21 @@
 from rest_framework import serializers
 
 from .models import AnesthesiaCase, CaseStatus
+from patient.serializers import PatientSerializer
+from preop.serializers import (
+    PreOpQuestionnaireSerializer,
+    ClinicalScoreSerializer,
+)
+from perop.serializers import (
+    PerOpSessionSerializer,
+    VitalSignMeasurementSerializer,
+    PerOpEventSerializer,
+)
+from postop.serializers import (
+    PostOpStaySerializer,
+    PostOpObservationSerializer,
+)
+from alert.serializers import AlertSerializer
 
 
 class AnesthesiaCaseSerializer(serializers.ModelSerializer):
@@ -27,3 +42,16 @@ class AnesthesiaCaseSerializer(serializers.ModelSerializer):
 
 class CaseStateTransitionSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=CaseStatus.choices)
+
+
+class CaseFullSummarySerializer(serializers.Serializer):
+    case = AnesthesiaCaseSerializer()
+    patient = PatientSerializer()
+    preop_questionnaire = PreOpQuestionnaireSerializer(allow_null=True)
+    clinical_scores = ClinicalScoreSerializer(many=True)
+    perop_session = PerOpSessionSerializer(allow_null=True)
+    perop_vitals = VitalSignMeasurementSerializer(many=True)
+    perop_events = PerOpEventSerializer(many=True)
+    postop_stay = PostOpStaySerializer(allow_null=True)
+    postop_observations = PostOpObservationSerializer(many=True)
+    alerts = AlertSerializer(many=True)
