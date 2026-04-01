@@ -2,46 +2,54 @@
 title DAI — Sequence Diagram (Pré-opératoire)
 
 actor Patient
+actor Anesthesiste
 participant "DAI Frontend" as FE
 participant "DAI Backend API" as BE
-participant "AI Module (Scoring)" as AI
+participant "PreOp Module" as PREOP
+participant "Scoring Engine" as SE
 database "DAI Database" as DB
-participant "SIH / DPI" as SIH
 
 == Initialisation ==
-
 Patient -> FE : Accéder au questionnaire pré-op
 FE -> BE : Demande questionnaire
-BE -> DB : Charger modèle questionnaire
-DB --> BE : Questionnaire
+BE -> PREOP : Charger structure questionnaire
+PREOP -> DB : Lire QuestionTemplate + questionnaire
+DB --> PREOP : Structure + état
+PREOP --> BE : Questionnaire
 BE --> FE : Questionnaire
 
 == Remplissage questionnaire ==
-
 Patient -> FE : Soumettre réponses
-FE -> BE : Transmettre réponses
+FE -> BE : POST réponses
+BE -> PREOP : SaveResponses(questionnaireId, responses)
+PREOP -> DB : Enregistrer / mettre à jour réponses
+DB --> PREOP : Confirmation
+PREOP --> BE : Réponses sauvegardées
 
-== Traitement IA ==
-
-BE -> AI : Calculer scores (ASA, RCRI, Apfel, Mallampati)
-AI --> BE : Scores calculés + alertes potentielles
-
-== Sauvegarde ==
-
-BE -> DB : Enregistrer réponses + scores
-DB --> BE : Confirmation
+== Calcul des scores ==
+FE -> BE : POST recompute scores
+BE -> PREOP : ComputeScores(questionnaireId)
+PREOP -> SE : Calculer scores
+SE --> PREOP : Scores calculés
+PREOP -> DB : Enregistrer ClinicalScore
+DB --> PREOP : Confirmation
+PREOP --> BE : Scores + détails
+BE --> FE : Afficher scores
 
 == Validation médicale ==
-
 Anesthesiste -> FE : Consulter dossier pré-op
-FE -> BE : Charger dossier
-BE -> DB : Lire données patient
-DB --> BE : Données complètes
+FE -> BE : Charger dossier pré-op
+BE -> PREOP : Lire questionnaire + réponses + scores
+PREOP -> DB : Lire données
+DB --> PREOP : Données complètes
+PREOP --> BE : Données pré-op
 BE --> FE : Afficher données + scores
 
-Anesthesiste -> FE : Valider / corriger
+Anesthesiste -> FE : Corriger / valider
 FE -> BE : Enregistrer validation
-BE -> DB : Mise à jour dossier
-DB --> BE : Confirmation
-
+BE -> PREOP : UpdateValidationStatus
+PREOP -> DB : Mise à jour statut + audit
+DB --> PREOP : Confirmation
+PREOP --> BE : Validation enregistrée
+BE --> FE : Confirmation
 @enduml

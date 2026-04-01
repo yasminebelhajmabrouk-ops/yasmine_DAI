@@ -4,7 +4,7 @@
 title DAI — C4 Container Diagram
 
 Person(patient, "Patient", "Remplit le questionnaire pré-opératoire")
-Person(anesthesiste, "Anesthésiste", "Valide les données cliniques")
+Person(anesthesiste, "Anesthésiste", "Valide les données cliniques et prend les décisions")
 Person(iade, "IADE", "Suit le patient au bloc")
 Person(sspi, "Équipe SSPI", "Suit le patient en post-op")
 Person(admin, "Administrateur IT", "Gère la plateforme")
@@ -17,10 +17,10 @@ System_Ext(auth, "Auth Service", "OIDC / JWT")
 System_Boundary(dai, "DAI") {
 
   Container(frontend, "Frontend Web", "React", "Interface utilisateur web pour pré-op, per-op, post-op et administration")
-  
-  Container(api, "Backend API", "Django REST Framework", "Expose les API REST, applique la logique métier, gère sécurité, alertes et audit")
 
-  ContainerDb(db, "Database", "PostgreSQL", "Stocke patients, dossiers anesthésie, scores, constantes, événements, alertes et audit")
+  Container(api, "Backend API", "Django REST Framework", "API REST modulaire couvrant patient, case, preop, perop, postop, audit, report, alert et intégration")
+
+  ContainerDb(db, "Database", "PostgreSQL", "Stocke patients, dossiers anesthésie, réponses, scores, sessions, constantes, événements, observations, audit")
 
   Container(gateway, "Device Gateway", "Adapter / Integration Layer", "Reçoit les constantes biomédicales et les transmet au backend")
 }
@@ -34,7 +34,7 @@ Rel(admin, frontend, "Utilise", "HTTPS")
 Rel(frontend, api, "Appelle", "REST / JSON")
 Rel(api, db, "Lit / écrit", "SQL")
 Rel(gateway, api, "Envoie données biomédicales", "REST / messaging")
-Rel(api, ai, "Appelle le calcul de scores / recommandations", "REST")
+Rel(api, ai, "Appelle calcul de scores / recommandations", "REST")
 Rel(api, auth, "Valide authentification / tokens", "OIDC / JWT")
 Rel(api, sih, "Échange données patient / documents", "REST / HL7 / FHIR")
 Rel(devices, gateway, "Envoie constantes", "Protocole biomédical")

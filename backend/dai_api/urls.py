@@ -8,4 +8,7 @@ urlpatterns = [
     path("api/", include("casefile.urls")),
     path("api/", include("preop.urls")),
     path("api/", include("audit.urls")),
+    path("api/", include("perop.urls")),
+    path("api/", include("postop.urls")),
+    path("api/", include("alert.urls")),
 ]

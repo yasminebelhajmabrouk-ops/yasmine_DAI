@@ -1,21 +1,22 @@
 @startuml
 title DAI — Class Diagram (Domain Model)
 
-' ====== Core Entities ======
 class Patient {
-  +patientId: UUID
-  +nationalId: String
-  +fullName: String
+  +id: UUID
+  +firstName: String
+  +lastName: String
   +dateOfBirth: Date
   +sex: String
 }
 
 class AnesthesiaCase {
-  +caseId: UUID
+  +id: UUID
   +status: CaseStatus
+  +surgeryType: String
+  +scheduledAt: DateTime
+  +notes: String
   +createdAt: DateTime
   +updatedAt: DateTime
-  +surgeryType: String
 }
 
 enum CaseStatus {
@@ -25,75 +26,116 @@ enum CaseStatus {
   CLOSED
 }
 
-' ====== Pre-op ======
 class PreOpQuestionnaire {
-  +questionnaireId: UUID
+  +id: UUID
+  +language: QuestionLanguage
+  +validationStatus: PreOpValidationStatus
   +submittedAt: DateTime
   +validatedAt: DateTime
-  +validationStatus: ValidationStatus
+  +createdAt: DateTime
+  +updatedAt: DateTime
 }
 
-enum ValidationStatus {
+enum PreOpValidationStatus {
   DRAFT
   SUBMITTED
   VALIDATED
   CORRECTED
 }
 
-class QuestionnaireResponse {
-  +responseId: UUID
+class QuestionTemplate {
+  +id: UUID
+  +section: String
+  +questionCode: String
+  +labelFr: String
+  +labelAr: String
+  +answerType: AnswerType
+  +isRequired: Boolean
+  +usedForScores: Boolean
+  +isActive: Boolean
+}
+
+class PreOpQuestionnaireResponse {
+  +id: UUID
   +questionCode: String
   +answerValue: String
+  +questionLabelFr: String
+  +questionLabelAr: String
+  +answerType: AnswerType
+}
+
+enum AnswerType {
+  BOOLEAN
+  TEXT
+  NUMBER
+  CHOICE
+  MULTI_CHOICE
+  DATE
 }
 
 class ClinicalScore {
-  +scoreId: UUID
-  +type: ScoreType
-  +value: String
+  +id: UUID
+  +scoreType: ScoreType
+  +scoreValue: String
+  +scoreDetails: JSON
   +computedAt: DateTime
-  +source: String
 }
 
 enum ScoreType {
-  ASA
-  RCRI
+  DUKE
+  LEE
+  STOP_BANG
   APFEL
-  MALLAMPATI
+  GOLD
+  CHILD_PUGH
+  NYHA
+  CHA2DS2_VASC
+  ARISCAT
   ALDRETE
 }
 
-' ====== Per-op Monitoring ======
 class PerOpSession {
-  +sessionId: UUID
+  +id: UUID
+  +status: PerOpSessionStatus
   +startedAt: DateTime
   +endedAt: DateTime
+  +notes: String
+}
+
+enum PerOpSessionStatus {
+  ACTIVE
+  ENDED
 }
 
 class VitalSignMeasurement {
-  +measurementId: UUID
-  +timestamp: DateTime
-  +heartRate: Integer
-  +systolicBP: Integer
-  +diastolicBP: Integer
-  +spo2: Integer
-  +etco2: Integer
+  +id: UUID
+  +vitalType: VitalType
+  +value: Decimal
+  +unit: String
+  +recordedAt: DateTime
+  +sourceDevice: String
 }
 
-class Device {
-  +deviceId: String
-  +vendor: String
-  +model: String
-  +connectionStatus: String
+enum VitalType {
+  HEART_RATE
+  SYSTOLIC_BP
+  DIASTOLIC_BP
+  MAP
+  SPO2
+  ETCO2
+  RESPIRATORY_RATE
+  TEMPERATURE
 }
 
-class Event {
-  +eventId: UUID
-  +timestamp: DateTime
-  +type: EventType
+class PerOpEvent {
+  +id: UUID
+  +eventType: PerOpEventType
+  +title: String
   +description: String
+  +timestamp: DateTime
 }
 
-enum EventType {
+enum PerOpEventType {
   MEDICATION
   PROCEDURE
   INCIDENT
@@ -101,97 +143,63 @@ enum EventType {
 }
 
 class MedicationAdministration {
-  +adminId: UUID
+  +id: UUID
   +drugName: String
   +dose: String
   +route: String
-  +timestamp: DateTime
+  +administeredAt: DateTime
 }
 
-' ====== Alerts ======
-class Alert {
-  +alertId: UUID
-  +type: AlertType
-  +severity: Severity
-  +status: AlertStatus
-  +raisedAt: DateTime
-  +ackAt: DateTime
-  +ackComment: String
-}
-
-enum AlertType {
-  HYPOTENSION
-  DESATURATION
-  BRADYCARDIA
-  TACHYCARDIA
-  OTHER
-}
-
-enum Severity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum AlertStatus {
-  ACTIVE
-  ACKNOWLEDGED
-  RESOLVED
-}
-
-' ====== Post-op ======
 class PostOpStay {
-  +stayId: UUID
+  +id: UUID
+  +status: PostOpStayStatus
   +startedAt: DateTime
   +endedAt: DateTime
+  +notes: String
+}
+
+enum PostOpStayStatus {
+  ACTIVE
+  ENDED
+}
+
+class PostOpObservation {
+  +id: UUID
+  +observationTime: DateTime
   +painScore: Integer
-}
-
-' ====== Documents & Audit ======
-class AnesthesiaReport {
-  +reportId: UUID
-  +generatedAt: DateTime
-  +format: String
-  +location: String
-}
-
-class User {
-  +userId: UUID
-  +fullName: String
-  +role: Role
-}
-
-enum Role {
-  ANESTHESIST
-  IADE
-  SSPI
-  ADMIN
+  +activityScore: Integer
+  +respirationScore: Integer
+  +circulationScore: Integer
+  +consciousnessScore: Integer
+  +oxygenationScore: Integer
+  +systolicBp: Integer
+  +spo2: Integer
+  +notes: String
+  +aldreteScore(): Integer
 }
 
 class AuditLog {
-  +auditId: UUID
+  +id: UUID
   +timestamp: DateTime
   +action: String
   +entityType: String
   +entityId: String
+  +actor: String
 }
 
-' ====== Relationships ======
 Patient "1" -- "0..*" AnesthesiaCase : has >
 AnesthesiaCase "1" -- "0..1" PreOpQuestionnaire : pre-op >
-PreOpQuestionnaire "1" -- "1..*" QuestionnaireResponse : contains >
+PreOpQuestionnaire "1" -- "0..*" PreOpQuestionnaireResponse : contains >
+QuestionTemplate "1" .. "0..*" PreOpQuestionnaireResponse : template >
 AnesthesiaCase "1" -- "0..*" ClinicalScore : produces >
+
 AnesthesiaCase "1" -- "0..1" PerOpSession : per-op >
 PerOpSession "1" -- "0..*" VitalSignMeasurement : records >
-PerOpSession "0..*" -- "0..*" Device : uses >
-AnesthesiaCase "1" -- "0..*" Event : logs >
-Event "0..1" -- "0..1" MedicationAdministration : details >
-AnesthesiaCase "1" -- "0..*" Alert : raises >
+PerOpSession "1" -- "0..*" PerOpEvent : logs >
+PerOpEvent "0..1" -- "0..1" MedicationAdministration : details >
+
 AnesthesiaCase "1" -- "0..1" PostOpStay : post-op >
-AnesthesiaCase "1" -- "0..1" AnesthesiaReport : generates >
+PostOpStay "1" -- "0..*" PostOpObservation : contains >
 
-User "1" -- "0..*" AuditLog : writes >
 AnesthesiaCase "1" -- "0..*" AuditLog : audited by >
-
 @enduml
