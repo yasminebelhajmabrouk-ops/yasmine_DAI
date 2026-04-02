@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from audit.services import create_audit_log
@@ -16,7 +16,7 @@ from .serializers import (
 
 class CaseAlertViewSet(viewsets.GenericViewSet):
     queryset = AnesthesiaCase.objects.select_related("patient").all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = serializers.Serializer
 
     @action(detail=True, methods=["get", "post"], url_path="alerts")
@@ -55,7 +55,7 @@ class CaseAlertViewSet(viewsets.GenericViewSet):
 
 class AlertLifecycleViewSet(viewsets.GenericViewSet):
     queryset = Alert.objects.select_related("anesthesia_case", "anesthesia_case__patient").all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = serializers.Serializer
 
     @action(detail=True, methods=["post"], url_path="ack")
