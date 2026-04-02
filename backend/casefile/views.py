@@ -1,6 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated 
 from rest_framework.response import Response
 
 from audit.services import create_audit_log
@@ -15,7 +15,7 @@ from .serializers import (
 class AnesthesiaCaseViewSet(viewsets.ModelViewSet):
     queryset = AnesthesiaCase.objects.select_related("patient").all()
     serializer_class = AnesthesiaCaseSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         case = serializer.save()
