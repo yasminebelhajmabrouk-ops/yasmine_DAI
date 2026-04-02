@@ -21,3 +21,8 @@ Thumbs.db
 dist/
 build/
 target/
+
+# backups
+backend/backup_data.json
+backend/backup_utf8.json
+backend/backup_utf8_nobom.json 
