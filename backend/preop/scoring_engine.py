@@ -3,8 +3,10 @@ from typing import Dict
 from .models import ScoreType
 
 
-def _normalize_answer(value: str) -> str:
-    return (value or "").strip().lower()
+def _normalize_answer(value) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value or "").strip().lower()
 
 
 def _is_true(value: str) -> bool:
@@ -545,10 +547,10 @@ def compute_child_pugh(response_map: Dict[str, str]) -> dict:
     }
 
 
-def compute_all_scores(questionnaire) -> list:
+def compute_all_scores(questionnaire) -> tuple:
     response_map = build_response_map(questionnaire)
 
-    return [
+    scores = [
         compute_duke(response_map),
         compute_stop_bang(response_map),
         compute_apfel(response_map),
@@ -559,3 +561,17 @@ def compute_all_scores(questionnaire) -> list:
         compute_cha2ds2_vasc(response_map),
         compute_ariscat(response_map),
     ]
+
+    alerts = []
+    # Generate some simple alerts based on scores
+    for score in scores:
+        val = str(score.get("score_value", ""))
+        score_type = score.get("score_type", "")
+        details = score.get("score_details", {})
+        
+        if score_type == "ARISCAT" and details.get("risk_level") == "HIGH":
+            alerts.append({"type": "PULMONARY RISK", "message": "High risk of postop pulmonary complications (ARISCAT)", "severity": "HIGH"})
+        elif score_type == "CHILD_PUGH" and val == "C":
+            alerts.append({"type": "HEPATIC RISK", "message": "Severe hepatic dysfunction (Child-Pugh C)", "severity": "HIGH"})
+
+    return scores, alerts

@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -19,7 +20,18 @@ from .serializers import (
     BulkQuestionnaireResponseSaveSerializer,
 )
 
-from .scoring_engine import compute_all_scores
+from .scoring_engine import (
+    compute_all_scores,
+    compute_duke,
+    compute_stop_bang,
+    compute_apfel,
+    compute_nyha,
+    compute_lee,
+    compute_gold,
+    compute_child_pugh,
+    compute_cha2ds2_vasc,
+    compute_ariscat,
+)
 
 
 class QuestionTemplateViewSet(viewsets.ReadOnlyModelViewSet):
@@ -162,3 +174,39 @@ class ClinicalScoreViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ClinicalScore.objects.select_related("anesthesia_case").all()
     serializer_class = ClinicalScoreSerializer
     permission_classes = [AllowAny]
+
+
+class ComputeScoresStandaloneView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        responses = request.data.get("responses", {})
+        
+        scores = [
+            compute_duke(responses),
+            compute_stop_bang(responses),
+            compute_apfel(responses),
+            compute_nyha(responses),
+            compute_lee(responses),
+            compute_gold(responses),
+            compute_child_pugh(responses),
+            compute_cha2ds2_vasc(responses),
+            compute_ariscat(responses),
+        ]
+        
+        return Response({"scores": scores, "alerts": []}, status=status.HTTP_200_OK)
+
+
+class DicomView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        fake_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ct-scan_of_the_brain.jpg/800px-Ct-scan_of_the_brain.jpg"
+        return Response({
+            "image": fake_image,
+            "info": {
+                "Modality": "CT",
+                "PatientName": "TEST PATIENT",
+                "PatientID": "123456789"
+            }
+        }, status=status.HTTP_200_OK)

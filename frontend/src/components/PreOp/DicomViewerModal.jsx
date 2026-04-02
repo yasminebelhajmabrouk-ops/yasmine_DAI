@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/client';
 import './DicomViewer.css';
 
+const dicomImages = [
+  { id: 1, type: "Axial CT" },
+  { id: 2, type: "Coronal CT" },
+  { id: 3, type: "Sagittal CT" }
+];
+
 const DicomViewerModal = ({ isOpen, onClose, patientName }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -48,7 +54,7 @@ const DicomViewerModal = ({ isOpen, onClose, patientName }) => {
             ) : dicomData && (
               <div className="dicom-image-wrapper">
                 <img 
-                  src={`data:image/png;base64,${dicomData.image}`} 
+                  src={dicomData.image.startsWith('http') ? dicomData.image : `data:image/png;base64,${dicomData.image}`} 
                   alt="DICOM View" 
                   className="dicom-real-image"
                 />

@@ -55,6 +55,7 @@ export const api = {
   getResponses: () => client.get('/preop-responses/'),
   createResponse: (data) => client.post('/preop-responses/', data),
   updateResponse: (id, data) => client.patch(`/preop-responses/${id}/`, data),
+  saveResponsesBulk: (id, responses) => client.post(`/preop-questionnaires/${id}/save-responses/`, { responses }),
 
   // Clinical Scores
   getScores: () => client.get('/clinical-scores/'),
@@ -64,10 +65,19 @@ export const api = {
   getCaseAuditLogs: (caseId) => client.get('/audit-logs/', { params: { entity_id: caseId } }),
 
   // Standalone Calculation
-  calculateRiskStandalone: (responses) => client.post('/preop/standalone-compute/', { responses }),
+  calculateRiskStandalone: (responses) => client.post('/compute-scores-standalone/', { responses }),
 
   // DICOM Imager
-  getDicomImage: () => client.get('/preop/dicom-view/'),
+  getDicomImage: () => client.get('/dicom-view/'),
+
+  // PerOp
+  getPerOpSummary: (caseId) => client.get(`/cases/${caseId}/perop/summary/`),
+  startPerOpSession: (caseId, data) => client.post(`/cases/${caseId}/perop/sessions/start/`, data),
+  endPerOpSession: (caseId, data) => client.post(`/cases/${caseId}/perop/sessions/end/`, data),
+  getPerOpVitals: (caseId) => client.get(`/cases/${caseId}/perop/vitals/`),
+  postPerOpVital: (caseId, data) => client.post(`/cases/${caseId}/perop/vitals/`, data),
+  getPerOpEvents: (caseId) => client.get(`/cases/${caseId}/perop/events/`),
+  postPerOpEvent: (caseId, data) => client.post(`/cases/${caseId}/perop/events/`, data),
 };
 
 export { client };

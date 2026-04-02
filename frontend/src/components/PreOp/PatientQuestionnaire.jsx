@@ -417,20 +417,26 @@ const PatientQuestionnaire = () => {
                 {lang === 'fr' ? '← Précédent' : '← السابق'}
               </button>
 
-              {isLastSection ? (
-                <button className="pq-btn-submit" onClick={handleSubmit} disabled={computing}>
+              <div style={{ display: 'flex', gap: '16px', flex: 1, justifyContent: 'flex-end', marginLeft: '16px' }}>
+                {!isLastSection && (
+                  <button className="pq-btn-next" onClick={() => {
+                    setActiveSection(sections[currentSectionIndex + 1]);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}>
+                    {lang === 'fr' ? 'Suivant →' : 'التالي →'}
+                  </button>
+                )}
+                <button 
+                  className="pq-btn-submit" 
+                  onClick={handleSubmit} 
+                  disabled={computing}
+                  style={{ flex: isLastSection ? 1 : 'none', minWidth: '220px', margin: 0 }}
+                >
                   {computing 
                     ? (lang === 'fr' ? 'Calcul...' : 'جاري الحساب...') 
                     : (lang === 'fr' ? '✓ Soumettre & Calculer' : '✓ إرسال وحساب النتائج')}
                 </button>
-              ) : (
-                <button className="pq-btn-next" onClick={() => {
-                  setActiveSection(sections[currentSectionIndex + 1]);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}>
-                  {lang === 'fr' ? 'Suivant →' : 'التالي →'}
-                </button>
-              )}
+              </div>
             </footer>
           </section>
         </main>

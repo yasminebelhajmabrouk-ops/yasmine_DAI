@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../api/client';
 import ScorePanel from './ScorePanel';
 import DecisionPanel from './DecisionPanel';
-import DicomViewerModal from './DicomViewerModal';
 import PatientTimelineModal from './PatientTimelineModal';
+import PerOpDashboard from '../PerOp/PerOpDashboard';
 
 const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
   const [data, setData] = useState(null);
@@ -12,9 +12,11 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
   const [notes, setNotes] = useState("");
   const [saveStatus, setSaveStatus] = useState("null"); // null, saving, saved
   const [isComputing, setIsComputing] = useState(false);
-  const [isDicomOpen, setIsDicomOpen] = useState(false);
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [timelineLogs, setTimelineLogs] = useState([]);
+  const [isPerOpMode, setIsPerOpMode] = useState(false);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [tempDate, setTempDate] = useState("");
 
   useEffect(() => {
     fetchCaseDetails();
@@ -102,6 +104,20 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
     }
   };
 
+  const handleUpdateDate = async () => {
+    if (!tempDate) return;
+    try {
+      // On met à jour le backend avec la nouvelle date
+      await api.updateCase(caseId, { scheduled_at: tempDate });
+      setIsEditingDate(false);
+      fetchCaseDetails(); // Recharger pour voir le changement
+      if (onUpdate) onUpdate(); // Rafraîchir le tableau de bord parent
+    } catch (err) {
+      console.error("Failed to update date", err);
+      alert("Erreur lors de la mise à jour de la date.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="pq-center">
@@ -122,6 +138,19 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
 
   const { patient, form, scores, case: anesthesiaCase } = data;
 
+  if (isPerOpMode) {
+    return (
+      <PerOpDashboard 
+        caseId={caseId}
+        patientData={patient}
+        onBack={() => {
+          setIsPerOpMode(false);
+          fetchCaseDetails(); // Refresh the case details when coming back
+        }}
+      />
+    );
+  }
+
   return (
     <div className="case-review-container animate-fade-in">
       <div className="review-header">
@@ -139,11 +168,32 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
               <span className="dot">•</span>
               <span>Né(e) le {new Date(patient.birth_date).toLocaleDateString()}</span>
               <span className="dot">•</span>
-              <span className="info-badge date-badge" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
-                Opération: {anesthesiaCase.scheduled_at 
-                  ? new Date(anesthesiaCase.scheduled_at).toLocaleDateString() 
-                  : 'À définir'}
-              </span>
+              {isEditingDate ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input 
+                    type="date" 
+                    className="premium-date-input"
+                    value={tempDate}
+                    onChange={(e) => setTempDate(e.target.value)}
+                  />
+                  <button className="btn-save-mini" onClick={handleUpdateDate}>✓</button>
+                  <button className="btn-cancel-mini" onClick={() => setIsEditingDate(false)}>✕</button>
+                </div>
+              ) : (
+                <button 
+                  className="info-badge date-badge-btn" 
+                  onClick={() => {
+                    setIsEditingDate(true);
+                    setTempDate(anesthesiaCase.scheduled_at ? anesthesiaCase.scheduled_at.split('T')[0] : "");
+                  }}
+                  title="Planifier l'intervention"
+                >
+                  <span className="cal-icon">📅</span>
+                  Opération: {anesthesiaCase.scheduled_at 
+                    ? new Date(anesthesiaCase.scheduled_at).toLocaleDateString() 
+                    : 'Non planifiée (Cliquer pour définir)'}
+                </button>
+              )}
               <span className="dot">•</span>
               <span className="info-badge">Dossier: {anesthesiaCase.id.substring(0,8)}</span>
             </div>
@@ -157,16 +207,6 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           <div className="glass-card section-card">
             <h3 className="section-title-premium">OUTILS CLINIQUES</h3>
             <div className="tools-grid">
-              <button className="tool-card-btn" onClick={() => setIsDicomOpen(true)}>
-                <span className="tool-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                    <polyline points="21 15 16 10 5 21"></polyline>
-                  </svg>
-                </span>
-                <span className="tool-label">Imagerie (DICOM)</span>
-              </button>
               <button className="tool-card-btn" onClick={handleOpenTimeline}>
                 <span className="tool-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -176,6 +216,19 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
                   </svg>
                 </span>
                 <span className="tool-label">Parcours Patient</span>
+              </button>
+              
+              <button 
+                className="tool-card-btn" 
+                onClick={() => setIsPerOpMode(true)}
+                style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)' }}
+              >
+                <span className="tool-icon" style={{ color: '#10b981' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                  </svg>
+                </span>
+                <span className="tool-label" style={{ color: '#10b981' }}>Entrer en Salle (Per-Op)</span>
               </button>
             </div>
           </div>
@@ -408,6 +461,49 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
         .save-notes-btn { width: 100%; margin-top: 4px; }
         .empty-msg { color: #475569; font-style: italic; }
       `}</style>
+      
+      <style>{`
+        .date-badge-btn {
+          background: rgba(16, 185, 129, 0.1);
+          color: #10b981;
+          border: 1px solid rgba(16, 185, 129, 0.2);
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .date-badge-btn:hover {
+          background: rgba(16, 185, 129, 0.2);
+          transform: translateY(-1px);
+        }
+        .cal-icon { font-size: 0.9rem; }
+        
+        .premium-date-input {
+          background: #1e293b;
+          border: 1px solid #334155;
+          color: #fff;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 0.8rem;
+          outline: none;
+        }
+        .btn-save-mini, .btn-cancel-mini {
+          background: #1e293b;
+          border: 1px solid #334155;
+          color: #fff;
+          padding: 4px 8px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 0.8rem;
+        }
+        .btn-save-mini:hover { background: #10b981; border-color: #10b981; }
+        .btn-cancel-mini:hover { background: #ef4444; border-color: #ef4444; }
+      `}</style>
+
+      {isTimelineOpen && (
+        <PatientTimelineModal isOpen={isTimelineOpen} logs={timelineLogs} patientName={`${patient.first_name} ${patient.last_name}`} onClose={() => setIsTimelineOpen(false)} />
+      )}
     </div>
   );
 };

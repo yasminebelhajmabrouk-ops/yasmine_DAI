@@ -60,6 +60,50 @@ const RiskCalculatorModal = ({ isOpen, onClose }) => {
             <Checkbox label="Opioïdes prévus en post-op" name="postop_opioids" value={inputs.postop_opioids} onChange={handleInputChange} />
           </div>
         );
+      case 'GOLD':
+        return (
+          <div className="calc-inputs-grid">
+            <Input label="VEMS (% prédit)" name="fev1_percent" type="number" value={inputs.fev1_percent} onChange={handleInputChange} />
+            <Input label="Exacerbations / an" name="copd_exacerbations_per_year" type="number" value={inputs.copd_exacerbations_per_year} onChange={handleInputChange} />
+            <Checkbox label="Hospitalisation l'année précédente" name="copd_hospitalization_last_year" value={inputs.copd_hospitalization_last_year} onChange={handleInputChange} />
+            <Input label="Score mMRC (0-4)" name="mmrc_grade" type="number" value={inputs.mmrc_grade} onChange={handleInputChange} />
+            <Input label="Score CAT (0-40)" name="cat_score" type="number" value={inputs.cat_score} onChange={handleInputChange} />
+          </div>
+        );
+      case 'CHILD-PUGH':
+        return (
+          <div className="calc-inputs-grid">
+            <Input label="Bilirubine (µmol/L)" name="bilirubin_umol_l" type="number" value={inputs.bilirubin_umol_l} onChange={handleInputChange} />
+            <Input label="Albumine (g/L)" name="albumin_g_l" type="number" value={inputs.albumin_g_l} onChange={handleInputChange} />
+            <Input label="INR" name="inr" type="number" value={inputs.inr} onChange={handleInputChange} />
+            <Select label="Ascite" name="ascites" value={inputs.ascites} options={[{val: '', label: 'Sélectionner...'}, {val: 'absent', label: 'Absente'}, {val: 'moderate', label: 'Modérée'}, {val: 'severe', label: 'Sévère'}]} onChange={handleInputChange} />
+            <Select label="Encéphalopathie" name="encephalopathy_grade" value={inputs.encephalopathy_grade} options={[{val: '', label: 'Sélectionner...'}, {val: 'absent', label: 'Absente'}, {val: 'grade_i_ii', label: 'Grade I-II'}, {val: 'severe', label: 'Grade III-IV'}]} onChange={handleInputChange} />
+          </div>
+        );
+      case 'ARISCAT':
+        return (
+          <div className="calc-inputs-grid">
+            <Input label="Âge" name="age" type="number" value={inputs.age} onChange={handleInputChange} />
+            <Input label="SpO2 pré-op (%)" name="preop_spo2" type="number" value={inputs.preop_spo2} onChange={handleInputChange} />
+            <Checkbox label="Infection respiratoire récente" name="recent_respiratory_infection" value={inputs.recent_respiratory_infection} onChange={handleInputChange} />
+            <Input label="Hémoglobine (g/dL)" name="preop_hb" type="number" value={inputs.preop_hb} onChange={handleInputChange} />
+            <Select label="Site chirurgical" name="surgical_incision_site" value={inputs.surgical_incision_site} options={[{val: '', label: 'Autre'}, {val: 'upper_abdominal', label: 'Abdominale supérieure'}, {val: 'thoracic', label: 'Thoracique'}]} onChange={handleInputChange} />
+            <Input label="Durée (heures)" name="surgery_duration_hours" type="number" value={inputs.surgery_duration_hours} onChange={handleInputChange} />
+            <Checkbox label="Chirurgie en urgence" name="urgent_surgery" value={inputs.urgent_surgery} onChange={handleInputChange} />
+          </div>
+        );
+      case 'CHA2DS2-VASC':
+        return (
+          <div className="calc-inputs-grid">
+            <Checkbox label="Insuffisance cardiaque" name="heart_failure" value={inputs.heart_failure} onChange={handleInputChange} />
+            <Checkbox label="Hypertension" name="hypertension" value={inputs.hypertension} onChange={handleInputChange} />
+            <Input label="Âge" name="age" type="number" value={inputs.age} onChange={handleInputChange} />
+            <Checkbox label="Diabète" name="diabetes" value={inputs.diabetes} onChange={handleInputChange} />
+            <Checkbox label="Antécédent d'AVC/AIT" name="stroke_history" value={inputs.stroke_history} onChange={handleInputChange} />
+            <Checkbox label="Maladie vasculaire" name="vascular_disease" value={inputs.vascular_disease} onChange={handleInputChange} />
+            <Checkbox label="Sexe Féminin" name="female_gender" value={inputs.female_gender} onChange={handleInputChange} />
+          </div>
+        );
       default: return null;
     }
   };
@@ -72,8 +116,8 @@ const RiskCalculatorModal = ({ isOpen, onClose }) => {
           <button className="btn-close" onClick={onClose}>&times;</button>
         </div>
 
-        <div className="calc-tabs">
-          {['RCRI', 'STOP-BANG', 'APFEL'].map(tab => (
+        <div className="calc-tabs" style={{ flexWrap: 'wrap' }}>
+          {['RCRI', 'STOP-BANG', 'APFEL', 'GOLD', 'CHILD-PUGH', 'ARISCAT', 'CHA2DS2-VASC'].map(tab => (
             <button key={tab} className={`tab-btn ${activeTab === tab ? 'active' : ''}`} onClick={() => {setActiveTab(tab); setResults(null);}}>
               {tab}
             </button>
@@ -170,7 +214,7 @@ const RiskCalculatorModal = ({ isOpen, onClose }) => {
         }
         .input-group { display: flex; flex-direction: column; gap: 6px; }
         .input-group label { font-size: 0.8rem; color: #94a3b8; }
-        .input-group input { 
+        .input-group input, .input-group select { 
           background: #0f172a; 
           border: 1px solid #1e293b; 
           color: #fff; 
@@ -228,6 +272,15 @@ const Input = ({ label, name, type, value, onChange }) => (
   <div className="input-group">
     <label>{label}</label>
     <input type={type} value={value || ''} onChange={(e) => onChange(name, e.target.value)} />
+  </div>
+);
+
+const Select = ({ label, name, value, options, onChange }) => (
+  <div className="input-group">
+    <label>{label}</label>
+    <select value={value || ''} onChange={(e) => onChange(name, e.target.value)}>
+      {options.map(o => <option key={o.val} value={o.val}>{o.label}</option>)}
+    </select>
   </div>
 );
 
