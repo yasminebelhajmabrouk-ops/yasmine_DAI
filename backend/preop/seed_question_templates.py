@@ -69,6 +69,15 @@ QUESTIONS = [
         "used_for_scores": True,
     },
 
+{
+    "section": "identity_context",
+    "question_code": "male_gender",
+    "label_fr": "Sexe masculin",
+    "label_ar": "الجنس ذكر",
+    "answer_type": AnswerType.BOOLEAN,
+    "is_required": False,
+    "used_for_scores": True,
+},
     # =========================
     # Medical history
     # =========================
@@ -133,6 +142,9 @@ QUESTIONS = [
     {"section": "bleeding_risk", "question_code": "blood_transfusion_history", "label_fr": "Transfusion antérieure", "label_ar": "تم نقل الدم", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
     {"section": "bleeding_risk", "question_code": "family_coagulation_disorder", "label_fr": "Trouble de coagulation familial", "label_ar": "اضطراب تخثر الدم عند أحد الأقارب", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
 
+
+
+
     # =========================
     # Family history
     # =========================
@@ -154,6 +166,15 @@ QUESTIONS = [
     {"section": "sleep_apnea", "question_code": "snoring", "label_fr": "Ronflement", "label_ar": "الشخير", "answer_type": AnswerType.CHOICE, "is_required": False, "used_for_scores": True, "choices": [{"value": "never", "label_fr": "Jamais", "label_ar": "أبداً"}, {"value": "sometimes", "label_fr": "Parfois", "label_ar": "أحياناً"}, {"value": "always", "label_fr": "Toujours", "label_ar": "دائماً"}]},
     {"section": "sleep_apnea", "question_code": "observed_apnea", "label_fr": "Apnées observées", "label_ar": "انقطاع التنفس أثناء النوم", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
     {"section": "sleep_apnea", "question_code": "daytime_tiredness", "label_fr": "Somnolence / fatigue diurne", "label_ar": "النعاس أثناء النهار", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
+{
+    "section": "sleep_apnea",
+    "question_code": "neck_circumference_cm",
+    "label_fr": "Circonférence du cou (cm)",
+    "label_ar": "محيط الرقبة (سم)",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
 
     # =========================
     # Cardio symptoms / rhythm
@@ -161,6 +182,51 @@ QUESTIONS = [
     {"section": "cardio_symptoms", "question_code": "palpitations", "label_fr": "Palpitations", "label_ar": "تسارع في دقات القلب", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": True},
     {"section": "cardio_symptoms", "question_code": "dizziness", "label_fr": "Vertiges / syncope", "label_ar": "دوار", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
     {"section": "cardio_symptoms", "question_code": "usual_blood_pressure", "label_fr": "Chiffres tensionnels habituels", "label_ar": "درجات ضغط الدم المعتادة", "answer_type": AnswerType.TEXT, "is_required": False, "used_for_scores": False},
+    {
+    "section": "cardio_risk",
+    "question_code": "high_risk_surgery",
+    "label_fr": "Chirurgie à haut risque",
+    "label_ar": "جراحة عالية الخطورة",
+    "answer_type": AnswerType.BOOLEAN,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "cardio_risk",
+    "question_code": "ischemic_heart_disease",
+    "label_fr": "Coronaropathie / cardiopathie ischémique",
+    "label_ar": "مرض الشرايين التاجية",
+    "answer_type": AnswerType.BOOLEAN,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "cardio_risk",
+    "question_code": "heart_failure",
+    "label_fr": "Insuffisance cardiaque",
+    "label_ar": "قصور القلب",
+    "answer_type": AnswerType.BOOLEAN,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "cardio_risk",
+    "question_code": "diabetes_on_insulin",
+    "label_fr": "Diabète traité par insuline",
+    "label_ar": "سكري مع علاج بالأنسولين",
+    "answer_type": AnswerType.BOOLEAN,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "cardio_risk",
+    "question_code": "creatinine_mg_dl",
+    "label_fr": "Créatinine (mg/dL)",
+    "label_ar": "الكرياتينين (mg/dL)",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
 
     # =========================
     # Dental / spine / airway
@@ -255,6 +321,164 @@ QUESTIONS = [
     {"section": "anesthetist_satisfaction", "question_code": "ease_of_use", "label_fr": "Facilité d’utilisation", "label_ar": "سهولة الاستخدام والفهم", "answer_type": AnswerType.NUMBER, "is_required": False, "used_for_scores": False},
     {"section": "anesthetist_satisfaction", "question_code": "helps_planning_anesthesia", "label_fr": "Aide à préparer l’anesthésie", "label_ar": "هل يساعدك الاستبيان على التخطيط للتخدير", "answer_type": AnswerType.BOOLEAN, "is_required": False, "used_for_scores": False},
     {"section": "anesthetist_satisfaction", "question_code": "anesthetist_comment", "label_fr": "Commentaire médecin anesthésiste", "label_ar": "تعليقات أو اقتراحات لتحسين الاستبيان", "answer_type": AnswerType.TEXT, "is_required": False, "used_for_scores": False},
+
+    # =========================
+    # Bloc GOLD 
+    # =========================
+{
+    "section": "respiratory_scores",
+    "question_code": "fev1_percent",
+    "label_fr": "VEMS / FEV1 (%)",
+    "label_ar": "نسبة FEV1 / VEMS",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "respiratory_scores",
+    "question_code": "copd_exacerbations_per_year",
+    "label_fr": "Nombre d’exacerbations BPCO/an",
+    "label_ar": "عدد نوبات تفاقم الانسداد الرئوي في السنة",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "respiratory_scores",
+    "question_code": "copd_hospitalization_last_year",
+    "label_fr": "Hospitalisation BPCO l’année précédente",
+    "label_ar": "استشفاء بسبب الانسداد الرئوي السنة الماضية",
+    "answer_type": AnswerType.BOOLEAN,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "respiratory_scores",
+    "question_code": "mmrc_grade",
+    "label_fr": "Grade mMRC",
+    "label_ar": "درجة mMRC",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "respiratory_scores",
+    "question_code": "cat_score",
+    "label_fr": "CAT score",
+    "label_ar": "درجة CAT",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+    # =========================
+    # Bloc CHILD-PUGH
+    # =========================
+{
+    "section": "hepatic_scores",
+    "question_code": "bilirubin_umol_l",
+    "label_fr": "Bilirubine (µmol/L)",
+    "label_ar": "البيليروبين (µmol/L)",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "hepatic_scores",
+    "question_code": "albumin_g_l",
+    "label_fr": "Albumine (g/L)",
+    "label_ar": "الألبومين (g/L)",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "hepatic_scores",
+    "question_code": "ascites",
+    "label_fr": "Ascite",
+    "label_ar": "استسقاء بطني",
+    "answer_type": AnswerType.CHOICE,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "hepatic_scores",
+    "question_code": "inr",
+    "label_fr": "INR",
+    "label_ar": "INR",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "hepatic_scores",
+    "question_code": "encephalopathy_grade",
+    "label_fr": "Encéphalopathie hépatique",
+    "label_ar": "الاعتلال الدماغي الكبدي",
+    "answer_type": AnswerType.CHOICE,
+    "is_required": False,
+    "used_for_scores": True,
+},
+# =========================
+# Bloc Bloc CHA2DS2-VASc
+# =========================
+{
+    "section": "cardio_risk",
+    "question_code": "vascular_disease",
+    "label_fr": "Maladie vasculaire",
+    "label_ar": "مرض وعائي",
+    "answer_type": AnswerType.BOOLEAN,
+    "is_required": False,
+    "used_for_scores": True,
+},
+
+# =========================
+# Bloc ARISCAT
+# =========================
+{
+    "section": "ariscat",
+    "question_code": "preop_spo2",
+    "label_fr": "SpO2 préopératoire (%)",
+    "label_ar": "تشبع الأكسجين قبل العملية (%)",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "ariscat",
+    "question_code": "preop_hb",
+    "label_fr": "Hémoglobine préopératoire (g/dL)",
+    "label_ar": "الهيموغلوبين قبل العملية (g/dL)",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "ariscat",
+    "question_code": "surgical_incision_site",
+    "label_fr": "Site de l’incision chirurgicale",
+    "label_ar": "موضع الشق الجراحي",
+    "answer_type": AnswerType.CHOICE,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "ariscat",
+    "question_code": "surgery_duration_hours",
+    "label_fr": "Durée de chirurgie (heures)",
+    "label_ar": "مدة الجراحة (ساعات)",
+    "answer_type": AnswerType.NUMBER,
+    "is_required": False,
+    "used_for_scores": True,
+},
+{
+    "section": "ariscat",
+    "question_code": "urgent_surgery",
+    "label_fr": "Procédure urgente",
+    "label_ar": "عملية مستعجلة",
+    "answer_type": AnswerType.BOOLEAN,
+    "is_required": False,
+    "used_for_scores": True,
+},
 ]
 
 

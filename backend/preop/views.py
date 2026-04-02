@@ -4,80 +4,34 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from audit.services import create_audit_log
-from .models import QuestionTemplate, PreOpQuestionnaire, PreOpQuestionnaireResponse, ClinicalScore
+from .models import (
+    QuestionTemplate,
+    PreOpQuestionnaire,
+    PreOpQuestionnaireResponse,
+    ClinicalScore,
+)
 from .serializers import (
     QuestionTemplateSerializer,
     PreOpQuestionnaireSerializer,
     PreOpQuestionnaireResponseSerializer,
     ClinicalScoreSerializer,
     PreOpQuestionnaireFormSerializer,
+    BulkQuestionnaireResponseSaveSerializer,
 )
-from rest_framework.views import APIView
-from .scoring_engine import compute_all_scores, compute_all_scores_from_map
 
-import os, base64
-from io import BytesIO
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import pydicom
+from .scoring_engine import compute_all_scores
 
-class DicomView(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        # Simulation: on pointe vers votre dossier d'images du projet dicom
-        # Dans un cas reel, on lierait l'ID du dossier au chemin du fichier
-        dicom_dir = r"C:\Users\YASMINE\dicom_project\s"
-        try:
-            fichiers = [f for f in os.listdir(dicom_dir) if f.endswith(".IMA") or f.endswith(".dcm")]
-            if not fichiers:
-                return Response({"error": "No DICOM files found"}, status=404)
-            
-            chemin = os.path.join(dicom_dir, fichiers[0])
-            dicom = pydicom.dcmread(chemin, force=True)
-            
-            # Rendu image
-            fig, ax = plt.subplots()
-            ax.imshow(dicom.pixel_array, cmap="gray")
-            ax.axis("off")
-            buf = BytesIO()
-            fig.savefig(buf, format="png", bbox_inches="tight", pad_inches=0)
-            plt.close(fig)
-            buf.seek(0)
-            image_base64 = base64.b64encode(buf.read()).decode("utf-8")
-
-            return Response({
-                "image": image_base64,
-                "info": {
-                    "PatientName": str(getattr(dicom, "PatientName", "N/A")),
-                    "PatientID": str(getattr(dicom, "PatientID", "N/A")),
-                    "Modality": str(getattr(dicom, "Modality", "N/A")),
-                }
-            })
-        except Exception as e:
-            return Response({"error": str(e)}, status=500)
-
-class ComputeScoresStandaloneView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        response_map = request.data.get("responses", {})
-        scores, alerts = compute_all_scores_from_map(response_map)
-        
-        # We don't save these to the DB since it's a standalone calculator
-        return Response({
-            "scores": scores,
-            "alerts": alerts
-        }, status=status.HTTP_200_OK)
 
 class QuestionTemplateViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = QuestionTemplate.objects.filter(is_active=True).all()
     serializer_class = QuestionTemplateSerializer
     permission_classes = [AllowAny]
 
+
 class PreOpQuestionnaireViewSet(viewsets.ModelViewSet):
-    queryset = PreOpQuestionnaire.objects.select_related("anesthesia_case").prefetch_related("responses")
+    queryset = PreOpQuestionnaire.objects.select_related(
+        "anesthesia_case"
+    ).prefetch_related("responses")
     serializer_class = PreOpQuestionnaireSerializer
     permission_classes = [AllowAny]
 
@@ -130,17 +84,62 @@ class PreOpQuestionnaireViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"], url_path="form")
     def form(self, request, pk=None):
         questionnaire = self.get_object()
-
-        questions = QuestionTemplate.objects.filter(is_active=True).order_by("section", "question_code")
+        questions = QuestionTemplate.objects.filter(is_active=True).order_by(
+            "section", "question_code"
+        )
         responses = questionnaire.responses.all()
 
-        serializer = PreOpQuestionnaireFormSerializer({
-            "questionnaire": questionnaire,
-            "questions": questions,
-            "responses": responses,
-        })
+        serializer = PreOpQuestionnaireFormSerializer(
+            {
+                "questionnaire": questionnaire,
+                "questions": questions,
+                "responses": responses,
+            }
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    @action(detail=True, methods=["post"], url_path="save-responses")
+    def save_responses(self, request, pk=None):
+        questionnaire = self.get_object()
+
+        serializer = BulkQuestionnaireResponseSaveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        saved_responses = []
+
+        for item in serializer.validated_data["responses"]:
+            template = QuestionTemplate.objects.get(
+                question_code=item["question_code"],
+                is_active=True,
+            )
+
+            response, _ = PreOpQuestionnaireResponse.objects.update_or_create(
+                questionnaire=questionnaire,
+                question_code=template.question_code,
+                defaults={
+                    "section": template.section,
+                    "question_label_fr": template.label_fr,
+                    "question_label_ar": template.label_ar,
+                    "answer_type": template.answer_type,
+                    "answer_value": item.get("answer_value", ""),
+                },
+            )
+            saved_responses.append(response)
+
+        create_audit_log(
+            action="SAVE_RESPONSES",
+            entity_type="PreOpQuestionnaire",
+            entity_id=str(questionnaire.id),
+            details={
+                "anesthesia_case_id": str(questionnaire.anesthesia_case.id),
+                "saved_count": len(saved_responses),
+            },
+        )
+
+        output_serializer = PreOpQuestionnaireResponseSerializer(saved_responses, many=True)
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
+
+
 class PreOpQuestionnaireResponseViewSet(viewsets.ModelViewSet):
     queryset = PreOpQuestionnaireResponse.objects.select_related("questionnaire").all()
     serializer_class = PreOpQuestionnaireResponseSerializer
