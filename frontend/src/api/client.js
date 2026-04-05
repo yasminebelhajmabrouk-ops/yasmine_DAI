@@ -17,6 +17,44 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
+// Intercepteur pour gérer l'expiration du token (Silent Refresh)
+client.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // Si l'erreur est 401 et qu'on n'a pas déjà essayé de rafraîchir
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const refreshToken = localStorage.getItem('refresh_token');
+      
+      if (refreshToken) {
+        try {
+          // On utilise axios directement pour éviter l'intercepteur de boucle
+          const refreshRes = await axios.post(`${API_BASE}/token/refresh/`, {
+            refresh: refreshToken
+          });
+          
+          const newAccessToken = refreshRes.data.access;
+          localStorage.setItem('access_token', newAccessToken);
+          
+          // Mettre à jour le header et re-tenter la requête
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return axios(originalRequest);
+        } catch (refreshError) {
+          // Si le refresh échoue (session trop vieille), on déconnecte proprement
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          window.location.href = '/login?expired=true';
+          return Promise.reject(refreshError);
+        }
+      }
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
 // ── API Endpoints ──
 
 export const api = {
@@ -78,6 +116,29 @@ export const api = {
   postPerOpVital: (caseId, data) => client.post(`/cases/${caseId}/perop/vitals/`, data),
   getPerOpEvents: (caseId) => client.get(`/cases/${caseId}/perop/events/`),
   postPerOpEvent: (caseId, data) => client.post(`/cases/${caseId}/perop/events/`, data),
+
+  // PostOp
+  getPostOpSummary: (caseId) => client.get(`/cases/${caseId}/postop/summary/`),
+  startPostOpStay: (caseId, data) => client.post(`/cases/${caseId}/postop/stay/start/`, data),
+  endPostOpStay: (caseId, data) => client.post(`/cases/${caseId}/postop/stay/end/`, data),
+  getPostOpObservations: (caseId) => client.get(`/cases/${caseId}/postop/observations/`),
+  postPostOpObservation: (caseId, data) => client.post(`/cases/${caseId}/postop/observations/`, data),
+  getAldreteScore: (caseId) => client.get(`/cases/${caseId}/postop/scores/aldrete/`),
+
+  // Alerts
+  getCaseAlerts: (caseId) => client.get(`/cases/${caseId}/alerts/`),
+  createCaseAlert: (caseId, data) => client.post(`/cases/${caseId}/alerts/`, data),
+  acknowledgeAlert: (alertId, data) => client.post(`/alerts/${alertId}/ack/`, data),
+  resolveAlert: (alertId, data) => client.post(`/alerts/${alertId}/resolve/`, data),
+
+  // Question Templates (Admin)
+  getTemplates: () => client.get('/question-templates/'),
+  createTemplate: (data) => client.post('/question-templates/', data),
+  updateTemplate: (id, data) => client.patch(`/question-templates/${id}/`, data),
+  deleteTemplate: (id) => client.delete(`/question-templates/${id}/`),
+
+  // User Profile
+  updateMe: (data) => client.patch('/me/', data),
 };
 
 export { client };

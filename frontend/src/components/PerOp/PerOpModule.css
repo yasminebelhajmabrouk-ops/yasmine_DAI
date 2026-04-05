@@ -65,7 +65,7 @@
 /* Layout Grid */
 .perop-grid {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 1fr 420px;
   gap: 24px;
 }
 @media (max-width: 992px) {
@@ -149,7 +149,7 @@
   color: #3b82f6;
   border: 1px solid rgba(59, 130, 246, 0.3);
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 50px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;

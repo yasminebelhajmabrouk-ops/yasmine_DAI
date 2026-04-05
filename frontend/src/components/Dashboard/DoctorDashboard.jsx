@@ -6,6 +6,9 @@ import StatCard from './StatCard';
 import ActivityFeed from './ActivityFeed';
 import CaseReviewDetail from '../PreOp/CaseReviewDetail';
 import RiskCalculatorModal from '../PreOp/RiskCalculatorModal';
+import TemplateManager from '../Admin/TemplateManager';
+import AuditViewer from '../Admin/AuditViewer';
+import UserProfile from './UserProfile';
 import './Dashboard.css';
 
 const DoctorDashboard = () => {
@@ -19,6 +22,9 @@ const DoctorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCaseId, setSelectedCaseId] = useState(null);
   const [isCalcModalOpen, setIsCalcModalOpen] = useState(false);
+  const [isTemplateMode, setIsTemplateMode] = useState(false);
+  const [isAuditMode, setIsAuditMode] = useState(false);
+  const [isProfileMode, setIsProfileMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [notifications, setNotifications] = useState([]);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -116,12 +122,38 @@ const DoctorDashboard = () => {
   // Case Detail View
   if (selectedCaseId) {
     return (
-      <div className="dashboard-content premium-theme animate-fade-in">
-        <CaseReviewDetail 
-          caseId={selectedCaseId} 
+      <div className="dashboard-content premium-theme">
+        <CaseReviewDetail
+          caseId={selectedCaseId}
           onBack={() => setSelectedCaseId(null)}
-          onUpdate={fetchData} 
+          onUpdate={fetchData}
         />
+      </div>
+    );
+  }
+
+  if (isTemplateMode) {
+    return (
+      <div className="dashboard-content premium-theme animate-fade-in">
+        <TemplateManager onBack={() => setIsTemplateMode(false)} />
+      </div>
+    );
+  }
+
+  // Audit Viewer View
+  if (isAuditMode) {
+    return (
+      <div className="dashboard-content premium-theme animate-fade-in">
+        <AuditViewer onBack={() => setIsAuditMode(false)} />
+      </div>
+    );
+  }
+
+  // User Profile View
+  if (isProfileMode) {
+    return (
+      <div className="dashboard-content premium-theme animate-fade-in">
+        <UserProfile onBack={() => setIsProfileMode(false)} />
       </div>
     );
   }
@@ -132,9 +164,13 @@ const DoctorDashboard = () => {
         <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h2>Tableau de Bord Médical</h2>
-            <p>Bonjour, Dr. {user?.last_name || 'Anesthésiste'}. Voici vos dossiers patients.</p>
+            <p>Bonjour, Dr. {user?.first_name || user?.last_name || 'Anesthésiste'}. Voici vos dossiers patients.</p>
           </div>
           <div className="header-right">
+            <button className="btn-profile-premium" onClick={() => setIsProfileMode(true)}>
+              <span></span>
+              <span>Mon Profil</span>
+            </button>
             <div className="notification-bell" onClick={() => setIsNotifOpen(!isNotifOpen)}>
               <span className="bell-icon">🔔</span>
               {notifications.length > 0 && (
@@ -160,17 +196,17 @@ const DoctorDashboard = () => {
                 </div>
               )}
             </div>
-            <button className="pd-logout-btn" onClick={logout} title="Déconnexion" style={{ marginTop: '0' }}>
-              <span style={{ marginRight: '8px' }}>Sortir</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
+            <button className="btn-logout-premium" onClick={logout} title="Déconnexion">
+              <span>Déconnexion</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
             </button>
           </div>
         </div>
-        
+
         <div className="dashboard-grid-top">
           <StatCard title="Patients" value={stats.patients} icon="👥" color="cyan" />
           <StatCard title="Dossiers" value={stats.cases} icon="🏥" color="violet" />
@@ -181,20 +217,20 @@ const DoctorDashboard = () => {
         <div className="dashboard-main-grid">
           <div className="glass-card cases-section">
             <div className="section-title">
-              <span>Liste des Dossiers Actifs</span>
+              <h3 className="feed-title-blue">Liste des Dossiers Actifs</h3>
               <div className="search-box-container">
-                <input 
-                  type="text" 
-                  className="search-input" 
-                  placeholder="Chercher un patient ou ID..." 
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Chercher un patient ou ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               <button className="btn btn-ghost btn-sm" onClick={fetchData}>Actualiser</button>
             </div>
-            
-            <div className="case-table-container">
+
+            <div className="case-review-container">
               <table className="case-table">
                 <thead>
                   <tr>
@@ -209,7 +245,7 @@ const DoctorDashboard = () => {
                 <tbody>
                   {filteredCases.map(c => {
                     const patient = patients[c.patient] || { first_name: 'Inconnu', last_name: '' };
-                    const surgeryDate = c.scheduled_at 
+                    const surgeryDate = c.scheduled_at
                       ? new Date(c.scheduled_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
                       : 'Non planifiée';
 
@@ -218,7 +254,7 @@ const DoctorDashboard = () => {
                         <td>
                           <div className="patient-name-cell">
                             <span className="name">{patient.first_name} {patient.last_name}</span>
-                            <span className="id">ID: {c.id.substring(0,8)}</span>
+                            <span className="id">ID: {c.id.substring(0, 8)}</span>
                           </div>
                         </td>
                         <td>{c.surgery_type}</td>
@@ -226,7 +262,7 @@ const DoctorDashboard = () => {
                         <td>{getStatusBadge(c.status)}</td>
                         <td>{getDecisionBadge(c.decision)}</td>
                         <td>
-                          <button 
+                          <button
                             className="btn btn-primary btn-sm"
                             onClick={() => setSelectedCaseId(c.id)}
                           >
@@ -250,25 +286,39 @@ const DoctorDashboard = () => {
 
           <div className="grid-col-1">
             <ActivityFeed logs={logs} />
-            
+
             <div className="glass-card quick-actions" style={{ marginTop: '24px' }}>
               <h3 className="section-title">Outils Cliniques</h3>
               <div className="actions-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <button 
-                  className="btn btn-secondary btn-sm" 
+                <button
+                  className="btn btn-secondary btn-sm"
                   style={{ width: '100%' }}
                   onClick={() => setIsCalcModalOpen(true)}
                 >
                   Calculateur de Risque
+                </button>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  style={{ width: '100%', border: '1px solid currentColor', marginTop: '8px' }}
+                  onClick={() => setIsTemplateMode(true)}
+                >
+                  Configuration Questionnaire
+                </button>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  style={{ width: '100%', border: '1px solid #64748b', marginTop: '8px', color: '#94a3b8' }}
+                  onClick={() => setIsAuditMode(true)}
+                >
+                  Log d'Audit Système
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <RiskCalculatorModal 
-          isOpen={isCalcModalOpen} 
-          onClose={() => setIsCalcModalOpen(false)} 
+        <RiskCalculatorModal
+          isOpen={isCalcModalOpen}
+          onClose={() => setIsCalcModalOpen(false)}
         />
       </div>
     </div>

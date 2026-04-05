@@ -4,6 +4,9 @@ import ScorePanel from './ScorePanel';
 import DecisionPanel from './DecisionPanel';
 import PatientTimelineModal from './PatientTimelineModal';
 import PerOpDashboard from '../PerOp/PerOpDashboard';
+import PostOpDashboard from '../PostOp/PostOpDashboard';
+import SignaturePad from '../Common/SignaturePad';
+import { useAuth } from '../../context/AuthContext';
 
 const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
   const [data, setData] = useState(null);
@@ -15,8 +18,12 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [timelineLogs, setTimelineLogs] = useState([]);
   const [isPerOpMode, setIsPerOpMode] = useState(false);
+  const [isPostOpMode, setIsPostOpMode] = useState(false);
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [tempDate, setTempDate] = useState("");
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+  const [signatureData, setSignatureData] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchCaseDetails();
@@ -31,11 +38,11 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
 
       // 2. Get Patient details
       const patientRes = await api.getPatient(caseData.patient);
-      
+
       // 3. Get Questionnaire and Form Details (to get sections and questions)
       const questionnairesRes = await api.getQuestionnaires();
       const caseQ = questionnairesRes.data.find(q => q.anesthesia_case === caseId);
-      
+
       let formDetails = null;
       if (caseQ) {
         const formRes = await api.getQuestionnaireForm(caseQ.id);
@@ -104,6 +111,37 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
     }
   };
 
+  const handleFinalizeCase = async () => {
+    if (!signatureData) {
+      alert("Veuillez apposer votre signature avant de clôturer.");
+      return;
+    }
+
+    setSaveStatus("saving");
+    try {
+      const timestamp = new Date().toLocaleString('fr-FR');
+      const digitalSeal = `\n\n--- VALIDATION MÉDICALE ---\nSigné numériquement par : Dr. ${user?.last_name || 'Anesthésiste'}\nDate : ${timestamp}\nAuthentification : Certifiée (Système DAI)\n----------------------------`;
+
+      const updatedNotes = notes + digitalSeal;
+
+      await api.updateCase(caseId, {
+        status: 'CLOSED',
+        decision_notes: updatedNotes
+      });
+
+      setIsSignatureModalOpen(false);
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("null"), 3000);
+      fetchCaseDetails(); // Refresh to lock UI
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      console.error("Failed to finalize case", err);
+      alert("Erreur lors de la clôture du dossier.");
+    } finally {
+      setSaveStatus("null");
+    }
+  };
+
   const handleUpdateDate = async () => {
     if (!tempDate) return;
     try {
@@ -140,7 +178,7 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
 
   if (isPerOpMode) {
     return (
-      <PerOpDashboard 
+      <PerOpDashboard
         caseId={caseId}
         patientData={patient}
         onBack={() => {
@@ -151,8 +189,21 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
     );
   }
 
+  if (isPostOpMode) {
+    return (
+      <PostOpDashboard
+        caseId={caseId}
+        patientData={patient}
+        onBack={() => {
+          setIsPostOpMode(false);
+          fetchCaseDetails();
+        }}
+      />
+    );
+  }
+
   return (
-    <div className="case-review-container animate-fade-in">
+    <div className="case-review-container">
       <div className="review-header">
         <button className="btn-back-link" onClick={onBack}>
           ← Retour à la liste
@@ -170,8 +221,8 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
               <span className="dot">•</span>
               {isEditingDate ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     className="premium-date-input"
                     value={tempDate}
                     onChange={(e) => setTempDate(e.target.value)}
@@ -180,8 +231,8 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
                   <button className="btn-cancel-mini" onClick={() => setIsEditingDate(false)}>✕</button>
                 </div>
               ) : (
-                <button 
-                  className="info-badge date-badge-btn" 
+                <button
+                  className="info-badge date-badge-btn"
                   onClick={() => {
                     setIsEditingDate(true);
                     setTempDate(anesthesiaCase.scheduled_at ? anesthesiaCase.scheduled_at.split('T')[0] : "");
@@ -189,13 +240,13 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
                   title="Planifier l'intervention"
                 >
                   <span className="cal-icon">📅</span>
-                  Opération: {anesthesiaCase.scheduled_at 
-                    ? new Date(anesthesiaCase.scheduled_at).toLocaleDateString() 
+                  Opération: {anesthesiaCase.scheduled_at
+                    ? new Date(anesthesiaCase.scheduled_at).toLocaleDateString()
                     : 'Non planifiée (Cliquer pour définir)'}
                 </button>
               )}
               <span className="dot">•</span>
-              <span className="info-badge">Dossier: {anesthesiaCase.id.substring(0,8)}</span>
+              <span className="info-badge">Dossier: {anesthesiaCase.id.substring(0, 8)}</span>
             </div>
           </div>
         </div>
@@ -217,9 +268,9 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
                 </span>
                 <span className="tool-label">Parcours Patient</span>
               </button>
-              
-              <button 
-                className="tool-card-btn" 
+
+              <button
+                className="tool-card-btn"
                 onClick={() => setIsPerOpMode(true)}
                 style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)' }}
               >
@@ -230,14 +281,29 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
                 </span>
                 <span className="tool-label" style={{ color: '#10b981' }}>Entrer en Salle (Per-Op)</span>
               </button>
+
+              <button
+                className="tool-card-btn"
+                onClick={() => setIsPostOpMode(true)}
+                style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.2))', border: '1px solid rgba(59, 130, 246, 0.3)' }}
+              >
+                <span className="tool-icon" style={{ color: '#3b82f6' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                  </svg>
+                </span>
+                <span className="tool-label" style={{ color: '#3b82f6' }}>Salle de Réveil (Post-Op)</span>
+              </button>
             </div>
           </div>
 
           {/* Scores Section */}
           <div className="glass-card section-card">
             <h3 className="section-title-premium">SYNTHÈSE DES RISQUES (IA)</h3>
-            <ScorePanel 
-              scores={data.scores} 
+            <ScorePanel
+              scores={data.scores}
               onCompute={handleComputeScores}
               loading={isComputing}
             />
@@ -251,12 +317,7 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
             ) : (
               <div className="responses-summary">
                 {/* Group responses by section */}
-                {form.questions.reduce((acc, q) => {
-                  const section = q.section || "Autre";
-                  if (!acc[section]) acc[section] = [];
-                  acc[section].push(q);
-                  return acc;
-                }, {} && Object.entries(form.questions.reduce((acc, q) => {
+                {Object.entries(form.questions.reduce((acc, q) => {
                   const section = q.section || "Autre";
                   if (!acc[section]) acc[section] = [];
                   acc[section].push(q);
@@ -268,10 +329,10 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
                       {qs.map(q => {
                         const response = form.responses.find(r => r.question_code === q.code);
                         if (!response || response.answer_value === null || response.answer_value === undefined) return null;
-                        
+
                         let displayValue = response.answer_value;
                         if (typeof displayValue === 'boolean') displayValue = displayValue ? 'Oui' : 'Non';
-                        
+
                         return (
                           <div key={q.code} className="q-review-item">
                             <span className="q-text">{q.text_fr}</span>
@@ -283,48 +344,93 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
                       })}
                     </div>
                   </div>
-                )))}
+                ))}
               </div>
             )}
           </div>
         </div>
 
         <div className="review-side">
-          <DecisionPanel 
-            caseId={caseId} 
-            currentDecision={anesthesiaCase.decision} 
+          <DecisionPanel
+            caseId={caseId}
+            currentDecision={anesthesiaCase.decision}
             onDecisionChange={(val) => {
               // Refresh or update parent
               onUpdate();
-            }} 
+            }}
           />
-          
+
           <div className="glass-card notes-card-premium" style={{ marginTop: '24px' }}>
             <div className="notes-header">
               <h4 className="section-title-premium" style={{ marginBottom: '0' }}>NOTES CLINIQUES</h4>
               {saveStatus === 'saved' && <span className="save-indicator">✓ Enregistré</span>}
               {saveStatus === 'saving' && <span className="save-indicator saving">...</span>}
             </div>
-            
-            <textarea 
-              className="premium-textarea" 
+
+            <textarea
+              className="premium-textarea"
               placeholder="Saisissez vos observations cliniques ici..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows="5"
             ></textarea>
-            
-            <button 
+
+            <button
               className={`btn btn-secondary btn-sm save-notes-btn ${saveStatus === 'saving' ? 'loading' : ''}`}
               onClick={handleSaveNotes}
-              disabled={saveStatus === 'saving'}
+              disabled={saveStatus === 'saving' || anesthesiaCase.status === 'CLOSED'}
             >
               Enregistrer la note
             </button>
+
+            {anesthesiaCase.status !== 'CLOSED' ? (
+              <button
+                className="btn btn-primary btn-sm"
+                style={{ width: '100%', marginTop: '12px', background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
+                onClick={() => setIsSignatureModalOpen(true)}
+              >
+                Signer & Clôturer le Dossier
+              </button>
+            ) : (
+              <div className="signature-seal-badge" style={{ width: '100%', justifyContent: 'center', marginTop: '12px' }}>
+                🛡️ Dossier Scellé Numériquement
+              </div>
+            )}
+
             <p className="hint-text">Ces notes seront immédiatement partagées avec l'équipe chirurgicale.</p>
           </div>
         </div>
       </div>
+
+      {/* Signature Modal */}
+      {isSignatureModalOpen && (
+        <div className="dicom-modal-overlay">
+          <div className="timeline-modal-content" style={{ maxWidth: '550px' }}>
+            <div className="timeline-modal-header">
+              <h3 className="feed-title-blue">Validation et Signature</h3>
+              <button className="btn-close-modal" onClick={() => setIsSignatureModalOpen(false)}>✕</button>
+            </div>
+            <div className="timeline-body" style={{ padding: '24px' }}>
+              <p style={{ color: '#fff', marginBottom: '20px', fontSize: '0.9rem' }}>
+                En signant ce dossier, vous confirmez que l'évaluation pré-opératoire est complète et que la décision d'anesthésie est validée.
+                <strong> Cette action est irréversible et clôturera le dossier.</strong>
+              </p>
+
+              <SignaturePad onSign={(data) => setSignatureData(data)} />
+            </div>
+            <div className="timeline-footer" style={{ gap: '16px' }}>
+              <button className="btn btn-secondary" onClick={() => setIsSignatureModalOpen(false)}>Annuler</button>
+              <button
+                className="btn btn-primary"
+                onClick={handleFinalizeCase}
+                disabled={!signatureData || saveStatus === 'saving'}
+              >
+                {saveStatus === 'saving' ? 'Clôture en cours...' : 'Confirmer et Clôturer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         .case-review-container {
@@ -461,7 +567,7 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
         .save-notes-btn { width: 100%; margin-top: 4px; }
         .empty-msg { color: #475569; font-style: italic; }
       `}</style>
-      
+
       <style>{`
         .date-badge-btn {
           background: rgba(16, 185, 129, 0.1);

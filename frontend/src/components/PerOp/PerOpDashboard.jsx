@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../api/client';
 import VitalsMonitor from './VitalsMonitor';
 import EventTimeline from './EventTimeline';
+import AlertCenter from '../Alerts/AlertCenter';
 import './PerOpModule.css';
 
 const PerOpDashboard = ({ caseId, patientData, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [sessionData, setSessionData] = useState(null);
   const [error, setError] = useState(null);
+  const [isAlertCenterOpen, setIsAlertCenterOpen] = useState(false);
 
   useEffect(() => {
     fetchSummary();
@@ -31,17 +33,14 @@ const PerOpDashboard = ({ caseId, patientData, onBack }) => {
       console.error('Error fetching perop summary', err);
       setError('Impossible de charger les données per-opératoires.');
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
   const handleStartSession = async () => {
     if (window.confirm("Démarrer la session d'anesthésie pour ce patient ? L'heure de début sera enregistrée formellement.")) {
       try {
-        // Le backend exige que le dossier soit en statut 'PER_OP' avant de démarrer.
         await api.updateCase(caseId, { status: 'PER_OP' });
-        
-        // Ensuite, on démarre la session
         await api.startPerOpSession(caseId, { started_at: new Date().toISOString() });
         fetchSummary();
       } catch (err) {
@@ -59,6 +58,22 @@ const PerOpDashboard = ({ caseId, patientData, onBack }) => {
       } catch (err) {
         alert("Erreur lors de la clôture : " + (err.response?.data?.detail || err.message));
       }
+    }
+  };
+
+  const handleTriggerTestAlert = async () => {
+    try {
+      await api.createCaseAlert(caseId, {
+        alert_type: "DESATURATION",
+        severity: "CRITICAL",
+        title: "Désaturation critique détectée",
+        message: "SpO2 passée sous les 85% pendant plus de 30s.",
+        raised_at: new Date().toISOString()
+      });
+      // Optionally open the center to show it
+      setIsAlertCenterOpen(true);
+    } catch (err) {
+      console.error("Failed to trigger test alert", err);
     }
   };
 
@@ -96,11 +111,28 @@ const PerOpDashboard = ({ caseId, patientData, onBack }) => {
             Monitoring Per-Opératoire
           </h2>
           <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '4px' }}>
-            Patient: {patientData?.first_name} {patientData?.last_name} • Bloc: Salle 4
+            Patient: {patientData?.first_name} {patientData?.last_name} • Bloc: Salle {Math.floor(Math.random() * 5) + 1}
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {isActive && (
+            <button 
+              className="perop-btn danger" 
+              onClick={handleTriggerTestAlert}
+              style={{ borderStyle: 'dashed', background: 'transparent' }}
+              title="Simuler une alerte critique (Test)"
+            >
+              ⚠ Test Alert
+            </button>
+          )}
+
+          <AlertCenter 
+            caseId={caseId} 
+            isOpen={isAlertCenterOpen} 
+            onClose={() => setIsAlertCenterOpen(!isAlertCenterOpen)} 
+          />
+
           {!isStarted && (
             <button className="perop-btn primary" onClick={handleStartSession}>
               ▶ Démarrer l'Intervention
