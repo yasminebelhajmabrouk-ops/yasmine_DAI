@@ -50,6 +50,15 @@ const ObservationHistory = ({ observations }) => {
                 <span style={{ margin: '0 8px' }}>•</span>
                 EVA: <span style={{ color: obs.pain_score > 3 ? '#ef4444' : '#fff' }}>{obs.pain_score}/10</span>
               </div>
+              
+              <div className="aldrete-breakdown" style={{ display: 'flex', gap: '4px', margin: '8px 0' }}>
+                <span className={`mini-badge score-${obs.activity_score}`} title="Activité">A:{obs.activity_score}</span>
+                <span className={`mini-badge score-${obs.respiration_score}`} title="Respiration">R:{obs.respiration_score}</span>
+                <span className={`mini-badge score-${obs.circulation_score}`} title="Circulation">C:{obs.circulation_score}</span>
+                <span className={`mini-badge score-${obs.consciousness_score}`} title="Conscience">Co:{obs.consciousness_score}</span>
+                <span className={`mini-badge score-${obs.oxygenation_score}`} title="Oxygénation">O:{obs.oxygenation_score}</span>
+              </div>
+
               <div className="obs-score">
                  {obs.systolic_bp || '--'} <span style={{ fontSize: '0.7rem', color: '#64748b' }}>mmHg</span>
               </div>
@@ -57,6 +66,27 @@ const ObservationHistory = ({ observations }) => {
           );
         })}
       </div>
+
+      <style>{`
+        .mini-badge {
+          font-size: 0.65rem;
+          font-weight: 700;
+          padding: 2px 6px;
+          border-radius: 4px;
+          background: rgba(255,255,255,0.05);
+          color: #94a3b8;
+          border: 1px solid rgba(255,255,255,0.1);
+        }
+        .mini-badge.score-2 { color: #10b981; border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.1); }
+        .mini-badge.score-1 { color: #f59e0b; border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.1); }
+        .mini-badge.score-0 { color: #ef4444; border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1); }
+        
+        .obs-card {
+          margin-bottom: 20px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+      `}</style>
     </div>
   );
 };

@@ -97,8 +97,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    const userData = await fetchUserData();
+    if (userData) {
+      setUser(prev => ({ ...prev, ...userData }));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, register, refreshUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

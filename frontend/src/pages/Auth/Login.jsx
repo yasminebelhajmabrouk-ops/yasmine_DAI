@@ -11,7 +11,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,7 +22,15 @@ const Login = () => {
     // In this app, email is used as username for login as well
     const res = await login(email, password);
     if (res.success) {
-      navigate('/');
+      // Check if the actual role matches the selected toggle
+      if (res.role !== role) {
+        logout();
+        const roleName = res.role === 'DOCTOR' ? 'Médecin' : 'Patient';
+        const expectedName = role === 'DOCTOR' ? 'Médecin' : 'Patient';
+        setError(`Accès ${expectedName} refusé : Ce compte est enregistré en tant que ${roleName}. Veuillez utiliser le bouton approprié.`);
+      } else {
+        navigate('/');
+      }
     } else {
       setError(res.error);
     }

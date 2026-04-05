@@ -19,7 +19,10 @@ const formatChartData = (vitals) => {
     if (v.vital_type === 'HEART_RATE') grouped[time].hr = parseFloat(v.value);
     if (v.vital_type === 'SYSTOLIC_BP') grouped[time].sys = parseFloat(v.value);
     if (v.vital_type === 'DIASTOLIC_BP') grouped[time].dia = parseFloat(v.value);
+    if (v.vital_type === 'MAP') grouped[time].map = parseFloat(v.value);
     if (v.vital_type === 'SPO2') grouped[time].spo2 = parseFloat(v.value);
+    if (v.vital_type === 'ETCO2') grouped[time].etco2 = parseFloat(v.value);
+    if (v.vital_type === 'TEMPERATURE') grouped[time].temp = parseFloat(v.value);
   });
   
   return Object.values(grouped);
@@ -39,8 +42,11 @@ const VitalsMonitor = ({ caseId, session, vitals, onVitalsUpdated }) => {
   const latestHR = getLatestVital(vitals, 'HEART_RATE');
   const latestSys = getLatestVital(vitals, 'SYSTOLIC_BP');
   const latestDia = getLatestVital(vitals, 'DIASTOLIC_BP');
+  const latestMap = getLatestVital(vitals, 'MAP');
   const latestSpo2 = getLatestVital(vitals, 'SPO2');
   const latestRr = getLatestVital(vitals, 'RESPIRATORY_RATE');
+  const latestEtco2 = getLatestVital(vitals, 'ETCO2');
+  const latestTemp = getLatestVital(vitals, 'TEMPERATURE');
 
   const handleAddVital = async (e) => {
     e.preventDefault();
@@ -85,6 +91,18 @@ const VitalsMonitor = ({ caseId, session, vitals, onVitalsUpdated }) => {
           <div className="vital-label">Fréq. Respiratoire</div>
           <div className="vital-value">{latestRr}<span className="vital-unit">/min</span></div>
         </div>
+        <div className="vital-card" style={{ borderLeftColor: '#a855f7' }}>
+          <div className="vital-label">MAP (PAM)</div>
+          <div className="vital-value" style={{ color: '#a855f7' }}>{latestMap}<span className="vital-unit">mmHg</span></div>
+        </div>
+        <div className="vital-card" style={{ borderLeftColor: '#f97316' }}>
+          <div className="vital-label">Température</div>
+          <div className="vital-value" style={{ color: '#f97316' }}>{latestTemp}<span className="vital-unit">°C</span></div>
+        </div>
+        <div className="vital-card" style={{ borderLeftColor: '#eab308' }}>
+          <div className="vital-label">EtCO2</div>
+          <div className="vital-value" style={{ color: '#eab308' }}>{latestEtco2}<span className="vital-unit">mmHg</span></div>
+        </div>
       </div>
 
       <div className="chart-container">
@@ -102,7 +120,10 @@ const VitalsMonitor = ({ caseId, session, vitals, onVitalsUpdated }) => {
               <Line yAxisId="left" type="monotone" dataKey="hr" name="FC (bpm)" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
               <Line yAxisId="left" type="monotone" dataKey="sys" name="TA Sys (mmHg)" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
               <Line yAxisId="left" type="monotone" dataKey="dia" name="TA Dia (mmHg)" stroke="#60a5fa" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
+              <Line yAxisId="left" type="monotone" dataKey="map" name="PAM (mmHg)" stroke="#a855f7" strokeWidth={2} dot={{ r: 3 }} />
               <Line yAxisId="right" type="monotone" dataKey="spo2" name="SpO2 (%)" stroke="#06b6d4" strokeWidth={2} dot={{ r: 3 }} />
+              <Line yAxisId="left" type="monotone" dataKey="etco2" name="EtCO2" stroke="#eab308" strokeWidth={2} dot={{ r: 2 }} />
+              <Line yAxisId="left" type="monotone" dataKey="temp" name="Temp (°C)" stroke="#f97316" strokeWidth={2} dot={{ r: 2 }} />
             </LineChart>
           </ResponsiveContainer>
         ) : (
@@ -123,7 +144,10 @@ const VitalsMonitor = ({ caseId, session, vitals, onVitalsUpdated }) => {
               <option value="HEART_RATE">Fréquence Cardiaque (bpm)</option>
               <option value="SYSTOLIC_BP">Tension Systolique (mmHg)</option>
               <option value="DIASTOLIC_BP">Tension Diastolique (mmHg)</option>
+              <option value="MAP">Pression Artérielle Moyenne (PAM)</option>
               <option value="SPO2">SpO2 (%)</option>
+              <option value="ETCO2">EtCO2 (mmHg)</option>
+              <option value="TEMPERATURE">Température (°C)</option>
               <option value="RESPIRATORY_RATE">Fréq. Respiratoire (/min)</option>
             </select>
             <input 

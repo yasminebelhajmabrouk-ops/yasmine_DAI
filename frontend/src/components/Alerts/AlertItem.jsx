@@ -33,11 +33,17 @@ const AlertItem = ({ alert, onUpdate }) => {
       
       <div className="alert-meta">
         <span className="alert-time">il y a {timeElapsed} min</span>
-        <div className="alert-actions">
+        <div className="alert-actions" style={{ display: 'flex', gap: '10px' }}>
           {alert.status === 'ACTIVE' && (
-            <button className="alert-btn" onClick={handleAcknowledge}>Acquitter</button>
+            <button className="alert-btn" onClick={handleAcknowledge} style={{ borderRadius: '50px', padding: '6px 18px', fontWeight: '700' }}>
+              Acquitter
+            </button>
           )}
-          <button className="alert-btn" style={{ background: 'currentColor', color: '#0f172a' }} onClick={handleResolve}>
+          <button 
+            className="alert-btn" 
+            style={{ borderRadius: '50px', padding: '6px 18px', fontWeight: '700', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: '#fff' }} 
+            onClick={handleResolve}
+          >
             Résoudre
           </button>
         </div>
