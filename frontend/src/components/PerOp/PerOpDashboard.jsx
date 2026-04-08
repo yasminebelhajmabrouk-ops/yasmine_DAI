@@ -107,10 +107,10 @@ const PerOpDashboard = ({ caseId, patientData, onBack }) => {
 
       <div className="perop-header glass-card" style={{ marginTop: '16px' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', margin: 0, color: '#fff' }}>
+          <h2 style={{ fontSize: '1.4rem', margin: 0, color: 'var(--text-primary)' }}>
             Monitoring Per-Opératoire
           </h2>
-          <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             Patient: {patientData?.first_name} {patientData?.last_name} • Bloc: Salle {Math.floor(Math.random() * 5) + 1}
           </div>
         </div>
@@ -162,8 +162,8 @@ const PerOpDashboard = ({ caseId, patientData, onBack }) => {
       {!isStarted ? (
         <div className="glass-card section-card" style={{ padding: '40px', textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: '16px' }}>⚕️</div>
-          <h3 style={{ color: '#e2e8f0', marginBottom: '8px' }}>En attente d'induction</h3>
-          <p style={{ color: '#94a3b8', maxWidth: '400px', margin: '0 auto' }}>
+          <h3 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>En attente d'induction</h3>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto' }}>
             La session per-opératoire n'a pas encore été démarrée pour ce patient. Cliquez sur le bouton "Démarrer" lorsque l'équipe est prête.
           </p>
         </div>

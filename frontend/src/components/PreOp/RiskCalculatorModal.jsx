@@ -113,7 +113,7 @@ const RiskCalculatorModal = ({ isOpen, onClose }) => {
       <div className="glass-card calculator-modal animate-scale-in">
         <div className="modal-header">
           <h3>Calculateur de Risque Clinique</h3>
-          <button className="btn-close" onClick={onClose}>&times;</button>
+          <button className="btn-close-modal" onClick={onClose}>&times;</button>
         </div>
 
         <div className="calc-tabs" style={{ flexWrap: 'wrap' }}>
@@ -159,7 +159,7 @@ const RiskCalculatorModal = ({ isOpen, onClose }) => {
         .modal-overlay {
           position: fixed;
           top: 0; left: 0; right: 0; bottom: 0;
-          background: rgba(0,0,0,0.8);
+          background: rgba(15, 23, 42, 0.25);
           backdrop-filter: blur(8px);
           z-index: 1000;
           display: flex;
@@ -171,91 +171,126 @@ const RiskCalculatorModal = ({ isOpen, onClose }) => {
           width: 100%;
           max-width: 600px;
           padding: 32px;
-          border: 1px solid rgba(255,255,255,0.1);
+          background: #ffffff !important;
+          border: 1px solid var(--border-color) !important;
+          max-height: 80vh;
+          overflow-y: auto;
+          border-radius: 16px !important;
+          box-shadow: var(--shadow-lg) !important;
         }
         .modal-header {
           display: flex;
           justify-content: space-between;
+          align-items: center;
           margin-bottom: 24px;
+        }
+        .modal-header h3 {
+          font-size: 1.1rem;
+          font-weight: 800;
+          color: var(--text-primary);
         }
         .btn-close {
-          background: none;
-          border: none;
-          color: #94a3b8;
-          font-size: 1.5rem;
+          background: #f4f8ff;
+          border: 1px solid var(--border-color);
+          color: var(--text-secondary);
+          font-size: 1.1rem;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
           cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
         }
+        .btn-close:hover { background: #eef4ff; color: var(--accent-primary); }
         .calc-tabs {
           display: flex;
-          gap: 8px;
+          gap: 4px;
           margin-bottom: 24px;
-          border-bottom: 1px solid #1e293b;
-          padding-bottom: 12px;
+          border-bottom: 2px solid var(--border-color);
+          padding-bottom: 0;
+          flex-wrap: wrap;
         }
         .tab-btn {
           background: none;
           border: none;
-          color: #64748b;
-          padding: 8px 16px;
+          border-bottom: 2px solid transparent;
+          margin-bottom: -2px;
+          color: var(--text-secondary);
+          padding: 8px 14px;
           cursor: pointer;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           transition: all 0.2s;
+          border-radius: 4px 4px 0 0;
         }
+        .tab-btn:hover { color: var(--accent-primary); background: #f4f8ff; }
         .tab-btn.active {
-          color: #3b82f6;
-          border-bottom: 2px solid #3b82f6;
+          color: var(--accent-primary);
+          border-bottom-color: var(--accent-primary);
         }
         .calc-inputs-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 16px;
+          gap: 12px;
           margin-bottom: 24px;
         }
         .input-group { display: flex; flex-direction: column; gap: 6px; }
-        .input-group label { font-size: 0.8rem; color: #94a3b8; }
+        .input-group label { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; }
         .input-group input, .input-group select { 
-          background: #0f172a; 
-          border: 1px solid #1e293b; 
-          color: #fff; 
-          padding: 10px; 
+          background: #ffffff; 
+          border: 1px solid var(--border-color); 
+          color: var(--text-primary); 
+          padding: 9px 12px; 
           border-radius: 8px;
+          font-size: 0.875rem;
+          transition: border-color 0.2s;
+        }
+        .input-group input:focus, .input-group select:focus {
+          outline: none;
+          border-color: var(--accent-primary);
+          box-shadow: 0 0 0 3px var(--accent-glow);
         }
         .checkbox-group { 
           display: flex; 
           align-items: center; 
           gap: 10px; 
-          background: rgba(255,255,255,0.03); 
-          padding: 10px; 
+          background: #f8fbff; 
+          padding: 10px 12px; 
           border-radius: 8px;
           cursor: pointer;
+          border: 1px solid var(--border-color);
+          transition: all 0.2s;
         }
-        .checkbox-group label { font-size: 0.85rem; color: #cbd5e1; cursor: pointer; }
+        .checkbox-group:hover { background: #eef4ff; border-color: rgba(91, 141, 239, 0.3); }
+        .checkbox-group label { font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; font-weight: 500; }
         .calculate-btn { width: 100%; padding: 14px; margin-top: 10px; }
         
         .calc-results {
-          margin-top: 30px;
-          padding-top: 24px;
-          border-top: 1px solid #1e293b;
+          margin-top: 24px;
+          padding-top: 20px;
+          border-top: 1px solid var(--border-color);
         }
+        .results-grid { display: grid; gap: 12px; }
         .result-main-card {
-          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
-          border: 1px solid rgba(59, 130, 246, 0.2);
+          background: linear-gradient(135deg, rgba(91, 141, 239, 0.08), rgba(59, 130, 246, 0.05));
+          border: 1px solid rgba(91, 141, 239, 0.2);
           border-radius: 12px;
           padding: 20px;
           text-align: center;
         }
-        .result-label { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; }
-        .result-value { font-size: 2.5rem; font-weight: 800; color: #fff; }
+        .result-label { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+        .result-value { font-size: 2.5rem; font-weight: 800; color: var(--text-primary); }
         .alert-pill {
-          margin-top: 16px;
+          margin-top: 12px;
           padding: 10px 16px;
           border-radius: 8px;
           font-size: 0.85rem;
           font-weight: 500;
         }
-        .alert-pill.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
-        .alert-pill.critical { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .alert-pill.warning { background: rgba(245, 158, 11, 0.08); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .alert-pill.critical { background: rgba(239, 68, 68, 0.08); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.2); }
       `}</style>
     </div>
   );

@@ -62,8 +62,8 @@ const ScorePanel = ({ scores, onCompute, loading }) => {
       <style>{`
         .score-panel-premium { padding: 32px; margin-bottom: 24px; }
         .panel-header-alt { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
-        .premium-title { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.1em; color: #fff; margin-bottom: 4px; }
-        .premium-subtitle { font-size: 0.75rem; color: #64748b; }
+        .premium-title { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.1em; color: var(--text-primary); margin-bottom: 4px; }
+        .premium-subtitle { font-size: 0.75rem; color: var(--text-secondary); }
 
         .scores-premium-grid {
           display: grid;
@@ -72,30 +72,34 @@ const ScorePanel = ({ scores, onCompute, loading }) => {
         }
 
         .score-card-alt {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.06);
+          background: #ffffff;
+          border: 1px solid var(--border-color);
+          border-left: 4px solid var(--border-color);
           border-radius: 10px;
           padding: 18px;
           display: flex;
           flex-direction: column;
           gap: 6px;
           transition: all 0.2s ease;
+          box-shadow: var(--shadow-sm);
         }
-        .score-card-alt:hover { transform: translateY(-2px); background: rgba(255,255,255,0.04); }
+        .score-card-alt:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
-        .score-tag { font-size: 0.6rem; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; }
-        .score-main-value { font-size: 1.1rem; font-weight: 600; color: #cbd5e1; line-height: 1.2; }
-        .score-card-footer { font-size: 0.55rem; color: #334155; }
+        .score-tag { font-size: 0.65rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; }
+        .score-main-value { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); line-height: 1.2; }
+        .score-card-footer { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+        .empty-scores { color: var(--text-muted); font-style: italic; text-align: center; padding: 24px; }
 
         /* Risk Colors */
-        .score-card-alt.badge-emerald { border-left: 4px solid #10b981; }
-        .score-card-alt.badge-amber { border-left: 4px solid #f59e0b; }
-        .score-card-alt.badge-rose { border-left: 4px solid #ef4444; }
-        .score-card-alt.badge-cyan { border-left: 4px solid #06b6d4; }
+        .score-card-alt.badge-emerald { border-left-color: #059669; }
+        .score-card-alt.badge-amber { border-left-color: #d97706; }
+        .score-card-alt.badge-rose { border-left-color: #dc2626; }
+        .score-card-alt.badge-cyan { border-left-color: #0891b2; }
         
-        .score-card-alt.badge-rose .score-main-value { color: #f87171; text-shadow: 0 0 10px rgba(248,113,113,0.3); }
-        .score-card-alt.badge-amber .score-main-value { color: #fbbf24; }
-        .score-card-alt.badge-emerald .score-main-value { color: #34d399; }
+        .score-card-alt.badge-rose .score-main-value { color: #dc2626; }
+        .score-card-alt.badge-amber .score-main-value { color: #d97706; }
+        .score-card-alt.badge-emerald .score-main-value { color: #059669; }
+        .score-card-alt.badge-cyan .score-main-value { color: #0891b2; }
       `}</style>
     </div>
   );

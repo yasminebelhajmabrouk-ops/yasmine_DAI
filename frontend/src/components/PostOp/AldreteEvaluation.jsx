@@ -122,8 +122,8 @@ const AldreteEvaluation = ({ caseId, onObservationAdded }) => {
           {ALDRETE_CATEGORIES.map(cat => (
             <div key={cat.id} className={`form-row-scoring ${scores[cat.id] !== null ? 'has-value' : ''}`}>
               <div className="label-group">
-                <div style={{ fontWeight: '600', color: '#f1f5f9' }}>{cat.label}</div>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{cat.label}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                   {scores[cat.id] !== null 
                     ? cat.options.find(o => o.value === scores[cat.id])?.label 
                     : "Sélectionnez une valeur..."}

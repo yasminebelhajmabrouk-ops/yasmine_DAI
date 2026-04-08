@@ -84,6 +84,11 @@ const DoctorDashboard = () => {
     }
   };
 
+  const formatSurgeryType = (val) => {
+    if (!val || val === 'UNKNOWN') return <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Non renseignée</span>;
+    return val.replace(/_/g, ' ').toLowerCase().replace(/^./, c => c.toUpperCase());
+  };
+
   const getStatusBadge = (status) => {
     switch (status) {
       case 'PRE_OP': return <span className="badge badge-amber">Pré-op</span>;
@@ -257,7 +262,7 @@ const DoctorDashboard = () => {
                             <span className="id">ID: {c.id.substring(0, 8)}</span>
                           </div>
                         </td>
-                        <td>{c.surgery_type}</td>
+                        <td style={{ fontSize: '0.875rem' }}>{formatSurgeryType(c.surgery_type)}</td>
                         <td><span className="date-cell">{surgeryDate}</span></td>
                         <td>{getStatusBadge(c.status)}</td>
                         <td>{getDecisionBadge(c.decision)}</td>

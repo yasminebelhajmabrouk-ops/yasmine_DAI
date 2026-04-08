@@ -1,16 +1,16 @@
-/* DAI - Premium Dark Theme Auth Styles */
+/* DAI Auth Styles - Light Pastel Theme */
 
 :root {
-  --auth-bg: #000000;
-  --auth-card-bg: #000000;
-  --auth-input-bg: #121212;
-  --auth-input-border: #222222;
-  --auth-input-focus: #3B82F6;
-  --auth-primary: #3B82F6;
-  --auth-primary-hover: #2563EB;
-  --auth-text-main: #FFFFFF;
-  --auth-text-muted: #9CA3AF;
-  --auth-text-label: #A1A1AA;
+  --auth-bg: #f4f8ff;
+  --auth-card-bg: #ffffff;
+  --auth-input-bg: #ffffff;
+  --auth-input-border: #dbe7f7;
+  --auth-input-focus: #5b8def;
+  --auth-primary: #5b8def;
+  --auth-primary-hover: #3b6fd4;
+  --auth-text-main: #1f2933;
+  --auth-text-muted: #6b7280;
+  --auth-text-label: #475569;
 }
 
 .auth-page {
@@ -29,6 +29,11 @@
   max-width: 480px;
   display: flex;
   flex-direction: column;
+  background: var(--auth-card-bg);
+  border: 1px solid var(--auth-input-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: 28px;
 }
 
 .auth-header {
@@ -39,7 +44,7 @@
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 8px;
-  color: #FFFFFF;
+  color: var(--auth-text-main);
 }
 
 .auth-header p {
@@ -50,11 +55,11 @@
 /* Role Toggle */
 .role-toggle {
   display: flex;
-  background: #121212;
+  background: #eef4ff;
   padding: 4px;
   border-radius: 8px;
   margin-bottom: 32px;
-  border: 1px solid #222;
+  border: 1px solid var(--auth-input-border);
 }
 
 .role-btn {
@@ -71,13 +76,13 @@
 }
 
 .role-btn.active {
-  background: #1A1A1A;
-  color: #FFFFFF;
-  box-shadow: 0 0 0 1px #333;
+  background: #ffffff;
+  color: #1d4ed8;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
 }
 
 .role-btn:not(.active):hover {
-  color: #FFFFFF;
+  color: #1e3a8a;
 }
 
 /* Form Styles */
@@ -102,7 +107,7 @@
 .form-group label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #FFFFFF;
+  color: var(--auth-text-label);
 }
 
 .form-input {
@@ -110,7 +115,7 @@
   border: 1px solid var(--auth-input-border);
   border-radius: 8px;
   padding: 12px 16px;
-  color: #FFFFFF;
+  color: var(--auth-text-main);
   font-size: 1rem;
   transition: all 0.2s ease;
 }
@@ -118,11 +123,12 @@
 .form-input:focus {
   outline: none;
   border-color: var(--auth-input-focus);
-  background: #18191B;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
 }
 
 .form-input::placeholder {
-  color: #4B5563;
+  color: #94a3b8;
 }
 
 .password-input-wrapper {
@@ -193,15 +199,15 @@
 
 .terms-text {
   font-size: 0.8rem;
-  color: #4B5563;
+  color: var(--auth-text-muted);
   margin-top: 16px;
   line-height: 1.5;
 }
 
 .auth-error {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #F87171;
+  color: #dc2626;
   padding: 12px;
   border-radius: 8px;
   font-size: 0.9rem;

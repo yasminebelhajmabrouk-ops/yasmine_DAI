@@ -78,7 +78,7 @@ const EventTimeline = ({ caseId, session, events, onEventsUpdated }) => {
               value={newEvent.event_type}
               onChange={(e) => setNewEvent({ ...newEvent, event_type: e.target.value })}
               className="premium-textarea"
-              style={{ margin: 0, height: '42px', padding: '0 12px', flex: '0.4', fontSize: '0.85rem', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
+              style={{ margin: 0, height: '42px', padding: '0 12px', flex: '0.4', fontSize: '0.85rem' }}
             >
               <option value="MEDICATION"> Médicament</option>
               <option value="PROCEDURE"> Geste Technique</option>
@@ -91,7 +91,7 @@ const EventTimeline = ({ caseId, session, events, onEventsUpdated }) => {
               value={newEvent.title}
               onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
               className="premium-textarea"
-              style={{ margin: 0, height: '42px', padding: '0 12px', flex: '1', fontSize: '0.9rem', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
+              style={{ margin: 0, height: '42px', padding: '0 12px', flex: '1', fontSize: '0.9rem' }}
               required
             />
           </div>

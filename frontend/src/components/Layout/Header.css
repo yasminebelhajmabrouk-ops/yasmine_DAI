@@ -27,7 +27,7 @@
 .user-email-label {
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--status-violet);
+  color: var(--accent-primary);
   background: var(--accent-glow);
   padding: 6px 14px;
   border-radius: 20px;

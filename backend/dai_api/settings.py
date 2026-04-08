@@ -85,15 +85,8 @@ WSGI_APPLICATION = 'dai_api.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "dai_bmad",
-        "USER": "dai_user",
-        "PASSWORD": "StrongPassword123!",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
-        "OPTIONS": {
-            "charset": "utf8mb4",
-        },
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 

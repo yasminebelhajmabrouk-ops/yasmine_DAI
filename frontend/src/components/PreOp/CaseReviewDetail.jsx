@@ -411,7 +411,7 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
               <button className="btn-close-modal" onClick={() => setIsSignatureModalOpen(false)}>✕</button>
             </div>
             <div className="timeline-body" style={{ padding: '24px' }}>
-              <p style={{ color: '#fff', marginBottom: '20px', fontSize: '0.9rem' }}>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>
                 En signant ce dossier, vous confirmez que l'évaluation pré-opératoire est complète et que la décision d'anesthésie est validée.
                 <strong> Cette action est irréversible et clôturera le dossier.</strong>
               </p>
@@ -438,11 +438,11 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           max-width: 1100px;
           margin: 0 auto;
         }
-        .patient-header h2 { font-size: 1.4rem; margin-bottom: 2px; font-weight: 700; color: #fff; }
-        .patient-info-row { display: flex; gap: 16px; color: #94a3b8; font-size: 0.8rem; align-items: center; }
+        .patient-header h2 { font-size: 1.4rem; margin-bottom: 2px; font-weight: 700; color: var(--text-primary); }
+        .patient-info-row { display: flex; gap: 16px; color: var(--text-secondary); font-size: 0.8rem; align-items: center; }
         .case-id-tag { 
-          background: rgba(59, 130, 246, 0.1); 
-          color: #60a5fa; 
+          background: rgba(91, 141, 239, 0.1); 
+          color: var(--accent-primary); 
           padding: 2px 10px; 
           border-radius: 4px; 
           font-family: monospace;
@@ -453,7 +453,7 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           font-size: 0.75rem;
           font-weight: 800;
           letter-spacing: 0.05em;
-          color: #475569;
+          color: var(--text-secondary);
           text-transform: uppercase;
           margin-bottom: 16px;
           display: block;
@@ -461,15 +461,7 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
         .review-header {
           margin-bottom: 24px;
         }
-        .btn-back-link {
-          background: none;
-          border: none;
-          color: #3b82f6;
-          cursor: pointer;
-          font-weight: 600;
-          margin-bottom: 16px;
-          display: block;
-        }
+
         .patient-banner {
           display: flex;
           align-items: center;
@@ -481,10 +473,11 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           align-items: center;
           gap: 12px;
           font-size: 0.85rem;
-          color: #94a3b8;
+          color: var(--text-secondary);
           margin-top: 4px;
+          flex-wrap: wrap;
         }
-        .dot { color: #334155; }
+        .dot { color: var(--border-color); }
         
         .review-grid {
           display: grid;
@@ -503,13 +496,13 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           margin-bottom: 24px;
         }
         .review-section h4 {
-          color: #3b82f6;
+          color: var(--accent-primary);
           font-size: 0.8rem;
           text-transform: uppercase;
           letter-spacing: 0.05em;
           margin-bottom: 12px;
           padding-bottom: 8px;
-          border-bottom: 1px solid #1e293b;
+          border-bottom: 1px solid var(--border-color);
         }
 
         .q-list-review {
@@ -524,28 +517,28 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           font-size: 0.9rem;
           padding: 6px 0;
         }
-        .q-text { color: #94a3b8; flex: 1; padding-right: 20px; }
-        .q-val { color: #fff; font-weight: 600; text-align: right; }
-        .highlight-red { color: #f87171; }
+        .q-text { color: var(--text-secondary); flex: 1; padding-right: 20px; }
+        .q-val { color: var(--text-primary); font-weight: 600; text-align: right; }
+        .highlight-red { color: #dc2626; }
 
         .card-title-mini {
           font-size: 0.75rem;
-          color: #64748b;
+          color: var(--text-secondary);
           font-weight: 700;
           letter-spacing: 0.1em;
           margin-bottom: 16px;
         }
         .hint-text {
           font-size: 0.7rem;
-          color: #475569;
+          color: var(--text-muted);
           margin-top: 8px;
         }
         .premium-textarea {
           width: 100%;
-          background: rgba(0,0,0,0.2);
-          border: 1px solid rgba(255,255,255,0.06);
+          background: #ffffff;
+          border: 1px solid var(--border-color);
           border-radius: 8px;
-          color: #fff;
+          color: var(--text-primary);
           padding: 14px;
           font-size: 0.9rem;
           line-height: 1.5;
@@ -553,25 +546,26 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           margin-bottom: 12px;
           transition: all 0.2s;
         }
+        .premium-textarea::placeholder { color: var(--text-muted); }
         .premium-textarea:focus {
           outline: none;
-          background: rgba(0,0,0,0.3);
-          border-color: rgba(59, 130, 246, 0.4);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          background: #ffffff;
+          border-color: var(--accent-primary);
+          box-shadow: 0 0 0 4px var(--accent-glow);
         }
         .notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .save-indicator { font-size: 0.7rem; color: #10b981; font-weight: 700; }
-        .save-indicator.saving { color: #3b82f6; animation: pulse 1s infinite; }
+        .save-indicator { font-size: 0.7rem; color: #059669; font-weight: 700; }
+        .save-indicator.saving { color: var(--accent-primary); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
         
         .save-notes-btn { width: 100%; margin-top: 4px; }
-        .empty-msg { color: #475569; font-style: italic; }
+        .empty-msg { color: var(--text-muted); font-style: italic; }
       `}</style>
 
       <style>{`
         .date-badge-btn {
-          background: rgba(16, 185, 129, 0.1);
-          color: #10b981;
+          background: rgba(16, 185, 129, 0.08);
+          color: #059669;
           border: 1px solid rgba(16, 185, 129, 0.2);
           cursor: pointer;
           transition: all 0.2s;
@@ -580,31 +574,43 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           gap: 8px;
         }
         .date-badge-btn:hover {
-          background: rgba(16, 185, 129, 0.2);
+          background: rgba(16, 185, 129, 0.15);
           transform: translateY(-1px);
         }
         .cal-icon { font-size: 0.9rem; }
         
         .premium-date-input {
-          background: #1e293b;
-          border: 1px solid #334155;
-          color: #fff;
+          background: #ffffff;
+          border: 1px solid var(--border-color);
+          color: var(--text-primary);
           padding: 4px 8px;
           border-radius: 6px;
           font-size: 0.8rem;
           outline: none;
         }
-        .btn-save-mini, .btn-cancel-mini {
-          background: #1e293b;
-          border: 1px solid #334155;
-          color: #fff;
+        .btn-save-mini {
+          background: #ffffff;
+          border: 1px solid var(--border-color);
+          color: #059669;
           padding: 4px 8px;
           border-radius: 6px;
           cursor: pointer;
           font-size: 0.8rem;
+          font-weight: 700;
         }
-        .btn-save-mini:hover { background: #10b981; border-color: #10b981; }
-        .btn-cancel-mini:hover { background: #ef4444; border-color: #ef4444; }
+        .btn-cancel-mini {
+          background: #ffffff;
+          border: 1px solid var(--border-color);
+          color: #dc2626;
+          padding: 4px 8px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 0.8rem;
+          font-weight: 700;
+        }
+        .btn-save-mini:hover { background: #059669; color: #ffffff; border-color: #059669; }
+        .btn-cancel-mini:hover { background: #dc2626; color: #ffffff; border-color: #dc2626; }
+
       `}</style>
 
       {isTimelineOpen && (

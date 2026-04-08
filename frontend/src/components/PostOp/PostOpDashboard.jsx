@@ -90,10 +90,10 @@ const PostOpDashboard = ({ caseId, patientData, onBack }) => {
 
       <header className="postop-header glass-card">
         <div>
-          <h2 style={{ fontSize: '1.4rem', margin: 0, color: '#fff' }}>
+          <h2 style={{ fontSize: '1.4rem', margin: 0, color: 'var(--text-primary)' }}>
             Surveillance Post-Opératoire (SSPRI)
           </h2>
-          <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             Patient : {patientData?.first_name} {patientData?.last_name} · Dossier : {caseId.substring(0,8)}
           </div>
         </div>
@@ -129,8 +129,8 @@ const PostOpDashboard = ({ caseId, patientData, onBack }) => {
       {!isStarted ? (
         <div className="glass-card section-card" style={{ padding: '60px', textAlign: 'center' }}>
           <div style={{ fontSize: '3.5rem', marginBottom: '20px' }}>🛌</div>
-          <h3 style={{ color: '#e2e8f0', marginBottom: '12px' }}>En attente de transfert</h3>
-          <p style={{ color: '#94a3b8', maxWidth: '450px', margin: '0 auto' }}>
+          <h3 style={{ color: 'var(--text-primary)', marginBottom: '12px' }}>En attente de transfert</h3>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '450px', margin: '0 auto' }}>
             Le patient n'est pas encore admis en salle de réveil. Cliquez sur "Admettre en SSPI" dès réception du patient en provenance du bloc opératoire.
           </p>
         </div>
@@ -170,9 +170,9 @@ const PostOpDashboard = ({ caseId, patientData, onBack }) => {
                     <div className="total-score-label">Score Aldrete</div>
                   </div>
                   
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
+                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
                     <div className="aldrete-label">Heure d'admission</div>
-                    <div style={{ color: '#fff', fontWeight: '600' }}>
+                    <div style={{ color: 'var(--text-primary)', fontWeight: '600' }}>
                       {new Date(stay.started_at).toLocaleString()}
                     </div>
                   </div>
@@ -180,7 +180,7 @@ const PostOpDashboard = ({ caseId, patientData, onBack }) => {
                   {stay.ended_at && (
                     <div style={{ marginTop: '12px' }}>
                       <div className="aldrete-label">Heure de sortie</div>
-                      <div style={{ color: '#fff', fontWeight: '600' }}>
+                      <div style={{ color: 'var(--text-primary)', fontWeight: '600' }}>
                         {new Date(stay.ended_at).toLocaleString()}
                       </div>
                     </div>
@@ -188,7 +188,7 @@ const PostOpDashboard = ({ caseId, patientData, onBack }) => {
 
                   <div style={{ marginTop: '12px' }}>
                     <div className="aldrete-label">Notes de séjour</div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.85rem', fontStyle: 'italic', marginTop: '4px' }}>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontStyle: 'italic', marginTop: '4px' }}>
                       {stay.notes || "Aucune note particulière."}
                     </div>
                   </div>

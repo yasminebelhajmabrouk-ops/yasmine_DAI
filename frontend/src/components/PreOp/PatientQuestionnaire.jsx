@@ -300,7 +300,7 @@ const PatientQuestionnaire = () => {
             <h2>📋 {lang === 'fr' ? 'Questionnaire Pré-anesthésique' : 'استبيان ما قبل التخدير'}</h2>
             {anesthesiaCase && (
               <span className="pq-subtitle">
-                {anesthesiaCase.surgery_type} · {anesthesiaCase.patient_full_name}
+                {(!anesthesiaCase.surgery_type || anesthesiaCase.surgery_type === 'UNKNOWN') ? <em>Non renseignée</em> : anesthesiaCase.surgery_type.replace(/_/g, ' ').toLowerCase().replace(/^./, c => c.toUpperCase())} · {anesthesiaCase.patient_full_name}
               </span>
             )}
           </div>

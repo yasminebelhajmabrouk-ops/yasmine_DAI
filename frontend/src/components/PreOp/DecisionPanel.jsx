@@ -63,44 +63,61 @@ const DecisionPanel = ({ caseId, currentDecision, onDecisionChange }) => {
         .decision-options {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
           margin-top: 16px;
         }
 
         .decision-btn {
           display: flex;
           align-items: center;
+          gap: 10px;
           padding: 12px 14px;
-          border-radius: 8px;
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.06);
-          color: #94a3b8;
+          border-radius: 10px;
+          background: #ffffff;
+          border: 1px solid var(--border-color);
+          color: var(--text-secondary);
           font-weight: 600;
           font-size: 0.85rem;
           cursor: pointer;
           transition: all 0.2s ease;
           text-align: left;
+          width: 100%;
+          box-shadow: var(--shadow-sm);
         }
 
         .decision-btn:hover {
-          background: rgba(255,255,255,0.04);
-          border-color: rgba(255,255,255,0.1);
+          background: #f4f8ff;
+          border-color: rgba(91, 141, 239, 0.3);
+          color: var(--text-primary);
           transform: translateX(4px);
         }
 
         .decision-btn.active {
-          background: rgba(59, 130, 246, 0.1);
-          border-color: rgba(59, 130, 246, 0.4);
-          color: #fff;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+          background: rgba(91, 141, 239, 0.1);
+          border-color: var(--accent-primary);
+          color: var(--accent-primary);
+          box-shadow: 0 2px 10px rgba(91, 141, 239, 0.15);
         }
+
+        .badge-dot {
+          width: 9px;
+          height: 9px;
+          border-radius: 50%;
+          background: var(--border-color);
+          flex-shrink: 0;
+          transition: background 0.2s;
+        }
+        .badge-dot.badge-emerald { background: #059669; }
+        .badge-dot.badge-amber { background: #d97706; }
+        .badge-dot.badge-blue { background: var(--accent-primary); }
+        .badge-dot.badge-rose { background: #dc2626; }
 
         .decision-status-summary {
           margin-top: 16px;
           padding-top: 12px;
-          border-top: 1px solid rgba(255,255,255,0.06);
+          border-top: 1px solid var(--border-color);
           font-size: 0.75rem;
-          color: #64748b;
+          color: var(--text-secondary);
           display: flex;
           justify-content: space-between;
           align-items: center;

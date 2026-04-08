@@ -42,7 +42,11 @@ const PatientSelector = ({ onSelectCase }) => {
                   setShowDropdown(false);
                 }}>
                   <div className="case-option-name">{c.patient_full_name}</div>
-                  <div className="case-option-meta">{c.surgery_type}</div>
+                  <div className="case-option-meta">
+                    {(!c.surgery_type || c.surgery_type === 'UNKNOWN')
+                      ? <em style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Chirurgie non renseignée</em>
+                      : c.surgery_type.replace(/_/g, ' ').toLowerCase().replace(/^./, x => x.toUpperCase())}
+                  </div>
                 </div>
               ))
             ) : (

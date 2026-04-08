@@ -8,7 +8,7 @@ const SignaturePad = ({ onSign }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = '#fff';
+    ctx.strokeStyle = '#1f2933';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -80,6 +80,56 @@ const SignaturePad = ({ onSign }) => {
       <div className="signature-footer">
         <p>En signant, vous certifiez l'exactitude des informations cliniques consignées.</p>
       </div>
+
+      <style>{`
+        .signature-pad-container {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .signature-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: var(--text-secondary);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .signature-canvas {
+          width: 100%;
+          height: 160px;
+          border: 1.5px solid var(--border-color);
+          border-radius: 10px;
+          background: #ffffff;
+          cursor: crosshair;
+          touch-action: none;
+          display: block;
+        }
+        .btn-clear {
+          background: transparent;
+          border: 1px solid var(--border-color);
+          color: var(--text-secondary);
+          font-size: 0.75rem;
+          font-weight: 600;
+          padding: 4px 10px;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .btn-clear:hover {
+          background: #fee2e2;
+          border-color: #fca5a5;
+          color: #dc2626;
+        }
+        .signature-footer p {
+          font-size: 0.72rem;
+          color: var(--text-muted);
+          font-style: italic;
+          margin: 0;
+        }
+      `}</style>
     </div>
   );
 };

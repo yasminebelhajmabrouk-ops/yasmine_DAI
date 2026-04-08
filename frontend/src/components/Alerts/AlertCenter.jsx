@@ -48,11 +48,11 @@ const AlertCenter = ({ caseId, isOpen, onClose }) => {
         <header className="alert-center-header">
           <h3 style={{ margin: 0, fontWeight: '800' }}>CENTRE D'ALERTE CLINIQUE</h3>
           <button 
-            className="btn-cancel-mini" 
+            className="btn-back-link" 
             onClick={onClose}
-            style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', borderRadius: '8px', cursor: 'pointer' }}
+            style={{ marginBottom: 0, padding: '6px 14px', fontSize: '0.8rem' }}
           >
-            Fermer
+            × Fermer
           </button>
         </header>
         
@@ -66,7 +66,7 @@ const AlertCenter = ({ caseId, isOpen, onClose }) => {
           )}
         </div>
         
-        <footer style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', color: '#475569' }}>
+        <footer style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
            Actualisation automatique toutes les 10s via le module backend d'alertes dynamiques.
         </footer>
       </div>

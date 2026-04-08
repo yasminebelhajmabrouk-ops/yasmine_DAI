@@ -26,7 +26,7 @@ const PatientTimelineModal = ({ isOpen, onClose, logs, patientName }) => {
         <div className="timeline-modal-header">
           <h3>Parcours de Soin</h3>
           <span>Historique complet : {patientName}</span>
-          <button className="btn-close-dicom" onClick={onClose}>×</button>
+          <button className="btn-close-modal" onClick={onClose}>×</button>
         </div>
 
         <div className="timeline-body">
@@ -58,7 +58,7 @@ const PatientTimelineModal = ({ isOpen, onClose, logs, patientName }) => {
         </div>
 
         <div className="timeline-footer">
-          <button className="btn-primary" onClick={onClose}>Fermer le parcours</button>
+          <button className="btn-back-link" onClick={onClose} style={{ marginBottom: 0 }}>Fermer le parcours</button>
         </div>
       </div>
     </div>

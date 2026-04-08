@@ -109,21 +109,23 @@ const VitalsMonitor = ({ caseId, session, vitals, onVitalsUpdated }) => {
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-              <XAxis dataKey="time" stroke="#94a3b8" fontSize={11} tickMargin={10} />
-              <YAxis yAxisId="left" stroke="#94a3b8" fontSize={11} domain={[40, 200]} />
-              <YAxis yAxisId="right" orientation="right" stroke="#06b6d4" fontSize={11} domain={[80, 100]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.07)" />
+              <XAxis dataKey="time" stroke="#6b7280" fontSize={11} tickMargin={10} tick={{ fill: '#6b7280' }} />
+              <YAxis yAxisId="left" stroke="#6b7280" fontSize={11} domain={[40, 200]} tick={{ fill: '#6b7280' }} />
+              <YAxis yAxisId="right" orientation="right" stroke="#0891b2" fontSize={11} domain={[80, 100]} tick={{ fill: '#0891b2' }} />
               <Tooltip 
-                contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', color: '#fff' }}
+                contentStyle={{ background: '#ffffff', border: '1px solid #dbe7f7', borderRadius: '8px', color: '#1f2933', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+                labelStyle={{ color: '#1f2933', fontWeight: '700', marginBottom: '4px' }}
+                itemStyle={{ color: '#475569' }}
               />
-              <Legend wrapperStyle={{ fontSize: '11px' }} />
-              <Line yAxisId="left" type="monotone" dataKey="hr" name="FC (bpm)" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-              <Line yAxisId="left" type="monotone" dataKey="sys" name="TA Sys (mmHg)" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
-              <Line yAxisId="left" type="monotone" dataKey="dia" name="TA Dia (mmHg)" stroke="#60a5fa" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
-              <Line yAxisId="left" type="monotone" dataKey="map" name="PAM (mmHg)" stroke="#a855f7" strokeWidth={2} dot={{ r: 3 }} />
-              <Line yAxisId="right" type="monotone" dataKey="spo2" name="SpO2 (%)" stroke="#06b6d4" strokeWidth={2} dot={{ r: 3 }} />
-              <Line yAxisId="left" type="monotone" dataKey="etco2" name="EtCO2" stroke="#eab308" strokeWidth={2} dot={{ r: 2 }} />
-              <Line yAxisId="left" type="monotone" dataKey="temp" name="Temp (°C)" stroke="#f97316" strokeWidth={2} dot={{ r: 2 }} />
+              <Legend wrapperStyle={{ fontSize: '11px', color: '#475569' }} />
+              <Line yAxisId="left" type="monotone" dataKey="hr" name="FC (bpm)" stroke="#059669" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+              <Line yAxisId="left" type="monotone" dataKey="sys" name="TA Sys (mmHg)" stroke="#5b8def" strokeWidth={2} dot={{ r: 3 }} />
+              <Line yAxisId="left" type="monotone" dataKey="dia" name="TA Dia (mmHg)" stroke="#93c5fd" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
+              <Line yAxisId="left" type="monotone" dataKey="map" name="PAM (mmHg)" stroke="#9333ea" strokeWidth={2} dot={{ r: 3 }} />
+              <Line yAxisId="right" type="monotone" dataKey="spo2" name="SpO2 (%)" stroke="#0891b2" strokeWidth={2} dot={{ r: 3 }} />
+              <Line yAxisId="left" type="monotone" dataKey="etco2" name="EtCO2" stroke="#ca8a04" strokeWidth={2} dot={{ r: 2 }} />
+              <Line yAxisId="left" type="monotone" dataKey="temp" name="Temp (°C)" stroke="#ea580c" strokeWidth={2} dot={{ r: 2 }} />
             </LineChart>
           </ResponsiveContainer>
         ) : (

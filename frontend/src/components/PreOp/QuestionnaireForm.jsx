@@ -251,7 +251,7 @@ const QuestionnaireForm = ({ id, caseId, onSuccess }) => {
           <div className="glass-card patient-summary-card">
              <h4 className="card-title-mini">RÉSUMÉ DOSSIER</h4>
              <div className="summary-details">
-                <div className="summary-row"><span className="label">Chirurgie:</span><span className="value">{formData.anesthesiaCase?.surgery_type}</span></div>
+                <div className="summary-row"><span className="label">Chirurgie:</span><span className="value">{(!formData.anesthesiaCase?.surgery_type || formData.anesthesiaCase.surgery_type === 'UNKNOWN') ? <em style={{ color: 'var(--text-muted)' }}>Non renseignée</em> : formData.anesthesiaCase.surgery_type.replace(/_/g, ' ').toLowerCase().replace(/^./, c => c.toUpperCase())}</span></div>
                 <div className="summary-row"><span className="label">Status Case:</span><span className="value">{formData.anesthesiaCase?.status}</span></div>
              </div>
           </div>
