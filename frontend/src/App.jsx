@@ -4,7 +4,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 
-// Lazy load — Patient
+// Lazy load — Pages
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 const PatientDashboard = lazy(() => import('./components/Dashboard/PatientDashboard'));
 const PatientQuestionnaire = lazy(() => import('./components/PreOp/PatientQuestionnaire'));
 const AirwayEvaluation = lazy(() => import('./components/PreOp/AirwayEvaluation'));
@@ -70,8 +71,8 @@ function AppContent() {
         <div className="page-container" style={{ maxWidth: '100%' }}>
           <Suspense fallback={<Loader />}>
             <Routes>
-              {/* Root redirect */}
-              <Route path="/" element={<PrivateRoute><DashboardRedirect /></PrivateRoute>} />
+              {/* Root route — Landing Page is always the first page seen */}
+              <Route path="/" element={<LandingPage />} />
 
               {/* Patient routes */}
               <Route path="/patient-dashboard" element={<PatientRoute><PatientDashboard /></PatientRoute>} />

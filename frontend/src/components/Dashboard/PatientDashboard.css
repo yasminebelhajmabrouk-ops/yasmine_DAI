@@ -335,6 +335,7 @@
   .pq-main-layout {
     grid-template-columns: 1fr;
   }
+
   .pq-side-nav {
     display: none;
   }
@@ -584,7 +585,8 @@
   color: var(--text-primary);
 }
 
-.pq-btn-next, .pq-btn-submit {
+.pq-btn-next,
+.pq-btn-submit {
   flex: 1;
   background: var(--primary);
   border: none;
@@ -597,7 +599,8 @@
   box-shadow: 0 2px 8px rgba(91, 141, 239, 0.2);
 }
 
-.pq-btn-next:hover, .pq-btn-submit:hover {
+.pq-btn-next:hover,
+.pq-btn-submit:hover {
   transform: translateY(-2px);
   background: var(--primary-hover);
   box-shadow: 0 4px 12px rgba(91, 141, 239, 0.3);
@@ -726,4 +729,6 @@
   color: var(--text-primary);
 }
 
-.pq-mt-20 { margin-top: 20px; }
+.pq-mt-20 {
+  margin-top: 20px;
+}

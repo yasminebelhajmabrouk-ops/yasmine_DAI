@@ -166,33 +166,48 @@ const DoctorDashboard = () => {
   return (
     <div className="dashboard-content premium-theme animate-fade-in">
       <div className="dashboard-main-container">
-        <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
+        <div className="dashboard-header">
+          {/* Titre à gauche sur tout l'espace */}
+          <div className="header-center-block">
             <h2>Tableau de Bord Médical</h2>
             <p>Bonjour, Dr. {user?.first_name || user?.last_name || 'Anesthésiste'}. Voici vos dossiers patients.</p>
           </div>
           <div className="header-right">
             <button className="btn-profile-premium" onClick={() => setIsProfileMode(true)}>
-              <span></span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
               <span>Mon Profil</span>
             </button>
+
+            <button className="btn-logout-blue" onClick={logout} title="Déconnexion">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span>Déconnexion</span>
+            </button>
+
             <div className="notification-bell" onClick={() => setIsNotifOpen(!isNotifOpen)}>
               <span className="bell-icon">🔔</span>
               {notifications.length > 0 && (
-                <span className="notif-badge">{notifications.length}</span>
+                <span className="notif-badge notif-badge-blue">{notifications.length}</span>
               )}
               {isNotifOpen && (
                 <div className="notif-dropdown glass-card">
                   <div className="notif-header">Alertes Cliniques</div>
                   {notifications.length === 0 ? (
-                    <div className="notif-empty">Aucune alerte critique</div>
+                    <div className="notif-empty">Aucune alerte active</div>
                   ) : (
                     notifications.map(n => (
-                      <div key={n.id} className="notif-item" onClick={() => {
+                      <div key={n.id} className="notif-item" onClick={(e) => {
+                        e.stopPropagation();
                         setSelectedCaseId(n.caseId);
                         setIsNotifOpen(false);
                       }}>
-                        <div className="id-notif-type">CRITIQUE</div>
+                        <div className="id-notif-type-blue">ALERTE</div>
                         <div className="notif-msg">{n.message}</div>
                         <div className="notif-time">{n.time}</div>
                       </div>
@@ -201,22 +216,14 @@ const DoctorDashboard = () => {
                 </div>
               )}
             </div>
-            <button className="btn-logout-premium" onClick={logout} title="Déconnexion">
-              <span>Déconnexion</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-            </button>
           </div>
         </div>
 
         <div className="dashboard-grid-top">
-          <StatCard title="Patients" value={stats.patients} icon="👥" color="cyan" />
-          <StatCard title="Dossiers" value={stats.cases} icon="🏥" color="violet" />
-          <StatCard title="Bilans" value={stats.questionnaires} icon="📋" color="amber" />
-          <StatCard title="Analyses IA" value={stats.scores} icon="⚡" color="emerald" />
+          <StatCard title="Patients" value={stats.patients} color="cyan" />
+          <StatCard title="Dossiers" value={stats.cases} color="violet" />
+          <StatCard title="Bilans" value={stats.questionnaires} color="amber" />
+          <StatCard title="Analyses IA" value={stats.scores} color="emerald" />
         </div>
 
         <div className="dashboard-main-grid">
@@ -290,9 +297,7 @@ const DoctorDashboard = () => {
           </div>
 
           <div className="grid-col-1">
-            <ActivityFeed logs={logs} />
-
-            <div className="glass-card quick-actions" style={{ marginTop: '24px' }}>
+            <div className="glass-card quick-actions">
               <h3 className="section-title">Outils Cliniques</h3>
               <div className="actions-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <button

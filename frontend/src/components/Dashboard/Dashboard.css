@@ -332,15 +332,31 @@
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   margin-bottom: 40px;
+  padding: 24px 0 20px 0;
+  border-bottom: 1px solid var(--border-color);
 }
 
+/* Spacer transparent pour équilibrer le centrage */
+.header-spacer {
+  flex: 1;
+}
+
+/* Titre — occupe tout l'espace disponible */
+.header-center-block {
+  flex: 1;
+  text-align: left;
+}
+
+/* Boutons à droite — ligne horizontale serrée */
 .header-right {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 24px;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .notif-dropdown {
@@ -472,7 +488,7 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  background: var(--status-rose);
+  background: var(--accent-primary);
   color: white;
   font-size: 0.65rem;
   font-weight: 800;
@@ -485,9 +501,25 @@
 }
 
 @keyframes pulse-notif {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(91, 141, 239, 0.4); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(91, 141, 239, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(91, 141, 239, 0); }
+}
+
+/* Blue notification badge */
+.notif-badge-blue {
+  background: var(--accent-primary);
+  border-color: #ffffff;
+}
+
+/* Blue alert type label */
+.id-notif-type-blue {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  margin-bottom: 4px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* Case Table Styles */
@@ -706,6 +738,29 @@
   color: white;
   border-color: var(--status-rose);
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Blue logout button */
+.btn-logout-blue {
+  background: linear-gradient(135deg, #5b8def 0%, #3b6fd4 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(91, 141, 239, 0.25);
+  transition: all 0.3s ease;
+}
+
+.btn-logout-blue:hover {
+  background: linear-gradient(135deg, #7aa5f3 0%, #5b8def 100%);
+  box-shadow: 0 6px 25px rgba(91, 141, 239, 0.4);
   transform: translateY(-2px);
 }
 

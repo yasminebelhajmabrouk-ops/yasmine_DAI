@@ -61,9 +61,9 @@ const AuditViewer = ({ onBack }) => {
 
   const filteredLogs = logs.filter(log => {
     const searchLow = searchTerm.toLowerCase();
-    const actionMatches = log.action.toLowerCase().includes(searchLow) || 
-                          log.actor.toLowerCase().includes(searchLow) ||
-                          log.entity_type.toLowerCase().includes(searchLow);
+    const actionMatches = log.action.toLowerCase().includes(searchLow) ||
+      log.actor.toLowerCase().includes(searchLow) ||
+      log.entity_type.toLowerCase().includes(searchLow);
     const filterMatches = filterAction === "" || log.action === filterAction;
     return actionMatches && filterMatches;
   });
@@ -94,29 +94,29 @@ const AuditViewer = ({ onBack }) => {
             <h1 className="feed-title-blue" style={{ fontSize: '1.6rem' }}>
               Audit et Traçabilité Système
             </h1>
-            <p style={{ color: '#fff', opacity: '0.9', marginTop: '6px', fontSize: '0.95rem', fontWeight: '500' }}>
+            <p style={{ color: '#160c0cff', opacity: '0.9', marginTop: '6px', fontSize: '0.95rem', fontWeight: '500' }}>
               Historique complet des actions cliniques effectuées sur la plateforme.
             </p>
           </div>
         </div>
         <button className="btn btn-secondary" onClick={fetchLogs} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px' }}>
-           <span style={{ fontSize: '1.1rem' }}>🔄</span>
-           Rafraîchir les données
+          <span style={{ fontSize: '1.1rem' }}>🔄</span>
+          Rafraîchir les données
         </button>
       </header>
 
       <div className="glass-card section-card" style={{ marginBottom: '24px', padding: '20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 250px', gap: '16px' }}>
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Rechercher par médecin, action, ou ID..."
             className="admin-input"
             style={{ marginBottom: 0 }}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-          <select 
-            className="admin-select" 
+          <select
+            className="admin-select"
             style={{ marginBottom: 0 }}
             value={filterAction}
             onChange={e => setFilterAction(e.target.value)}
@@ -163,10 +163,10 @@ const AuditViewer = ({ onBack }) => {
                 {expandedLog === log.id && (
                   <tr>
                     <td colSpan="5" style={{ padding: '16px', background: 'rgba(59, 130, 246, 0.03)' }}>
-                      <div style={{ 
-                        background: 'rgba(15, 23, 42, 0.8)', 
-                        padding: '20px', 
-                        borderRadius: '12px', 
+                      <div style={{
+                        background: 'rgba(15, 23, 42, 0.8)',
+                        padding: '20px',
+                        borderRadius: '12px',
                         border: '1px solid rgba(255,255,255,0.05)',
                         boxShadow: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)'
                       }}>

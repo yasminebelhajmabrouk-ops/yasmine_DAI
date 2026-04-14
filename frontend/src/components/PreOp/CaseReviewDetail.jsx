@@ -215,10 +215,7 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
           <div className="patient-main-info">
             <h2>{patient.last_name} {patient.first_name}</h2>
             <div className="patient-meta">
-              <span>{patient.gender === 'male' ? 'Homme' : 'Femme'}</span>
-              <span className="dot">•</span>
-              <span>Né(e) le {new Date(patient.birth_date).toLocaleDateString()}</span>
-              <span className="dot">•</span>
+
               {isEditingDate ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <input
@@ -309,45 +306,7 @@ const CaseReviewDetail = ({ caseId, onBack, onUpdate }) => {
             />
           </div>
 
-          {/* Questionnaire Section */}
-          <div className="glass-card section-card">
-            <h3 className="section-title-premium">RÉPONSES AU QUESTIONNAIRE</h3>
-            {!form ? (
-              <p className="empty-msg">Aucun questionnaire n'a été soumis pour ce patient.</p>
-            ) : (
-              <div className="responses-summary">
-                {/* Group responses by section */}
-                {Object.entries(form.questions.reduce((acc, q) => {
-                  const section = q.section || "Autre";
-                  if (!acc[section]) acc[section] = [];
-                  acc[section].push(q);
-                  return acc;
-                }, {})).map(([section, qs]) => (
-                  <div key={section} className="review-section">
-                    <h4>{section}</h4>
-                    <div className="q-list-review">
-                      {qs.map(q => {
-                        const response = form.responses.find(r => r.question_code === q.code);
-                        if (!response || response.answer_value === null || response.answer_value === undefined) return null;
 
-                        let displayValue = response.answer_value;
-                        if (typeof displayValue === 'boolean') displayValue = displayValue ? 'Oui' : 'Non';
-
-                        return (
-                          <div key={q.code} className="q-review-item">
-                            <span className="q-text">{q.text_fr}</span>
-                            <span className={`q-val ${response.answer_value === true ? 'highlight-red' : ''}`}>
-                              {displayValue}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="review-side">
