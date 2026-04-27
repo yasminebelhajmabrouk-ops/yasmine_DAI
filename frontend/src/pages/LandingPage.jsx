@@ -45,7 +45,7 @@ const LandingPage = () => {
     <div className="landing-container">
       {/* 🧭 Navigation Bar */}
       <nav className="lp-navbar">
-        <div className="lp-nav-logo">DAI-BMAD</div>
+        <div className="lp-nav-logo">DAI</div>
         <div className="lp-nav-links">
           <a href="#plateforme">Plateforme</a>
           <a href="#medecins">Pour Médecins</a>
@@ -205,14 +205,14 @@ const LandingPage = () => {
         <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto', background: 'white' }}>
           <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Prêt à moderniser votre bloc ?</h2>
           <p style={{ color: 'var(--lp-text-muted)', marginBottom: '32px' }}>
-            Rejoignez les centres hospitaliers qui font confiance à DAI-BMAD pour leur suivi anesthésique.
+            Rejoignez les centres hospitaliers qui font confiance à DAI pour leur suivi anesthésique.
           </p>
           <button className="btn-lp btn-lp-primary" onClick={() => navigate('/signup')}>
             S'inscrire <ChevronRight size={18} />
           </button>
         </div>
         <div style={{ marginTop: '60px', color: 'var(--lp-text-muted)', fontSize: '0.9rem' }}>
-          © 2026 DAI-BMAD Platform. Mission Critical Health Solutions.
+          © 2026 DAI Platform. Mission Critical Health Solutions.
         </div>
       </footer>
     </div>

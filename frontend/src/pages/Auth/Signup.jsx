@@ -17,7 +17,7 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -33,7 +33,7 @@ const Signup = () => {
     // Prepare data for backend
     const submissionData = {
       ...formData,
-      username: formData.email, 
+      username: formData.email,
       role: role
     };
 
@@ -55,7 +55,7 @@ const Signup = () => {
           <div className="auth-side-overlay"></div>
         </div>
         <div className="auth-side-footer">
-          <div className="auth-side-logo">DAI-BMAD</div>
+          <div className="auth-side-logo">DAI</div>
           <p className="auth-side-quote">
             "La précision technologique au service de la sécurité anesthésique."
           </p>
@@ -79,14 +79,14 @@ const Signup = () => {
           </div>
 
           <div className="role-toggle">
-            <button 
+            <button
               type="button"
               className={`role-btn ${role === 'DOCTOR' ? 'active' : ''}`}
               onClick={() => setRole('DOCTOR')}
             >
               Médecin
             </button>
-            <button 
+            <button
               type="button"
               className={`role-btn ${role === 'PATIENT' ? 'active' : ''}`}
               onClick={() => setRole('PATIENT')}
@@ -101,40 +101,40 @@ const Signup = () => {
             <div className="form-row">
               <div className="form-group">
                 <label>Prénom</label>
-                <input 
-                  type="text" 
-                  name="first_name" 
-                  className="form-input" 
+                <input
+                  type="text"
+                  name="first_name"
+                  className="form-input"
                   placeholder="Jean"
                   value={formData.first_name}
-                  onChange={handleChange} 
-                  required 
+                  onChange={handleChange}
+                  required
                 />
               </div>
               <div className="form-group">
                 <label>Nom</label>
-                <input 
-                  type="text" 
-                  name="last_name" 
-                  className="form-input" 
+                <input
+                  type="text"
+                  name="last_name"
+                  className="form-input"
                   placeholder="Dupont"
                   value={formData.last_name}
-                  onChange={handleChange} 
-                  required 
+                  onChange={handleChange}
+                  required
                 />
               </div>
             </div>
 
             <div className="form-group">
               <label>Adresse e-mail</label>
-              <input 
-                type="email" 
-                name="email" 
-                className="form-input" 
+              <input
+                type="email"
+                name="email"
+                className="form-input"
                 placeholder={role === 'DOCTOR' ? 'docteur@hopital.org' : 'patient@email.com'}
                 value={formData.email}
-                onChange={handleChange} 
-                required 
+                onChange={handleChange}
+                required
               />
             </div>
 
@@ -142,26 +142,26 @@ const Signup = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Spécialité</label>
-                  <input 
-                    type="text" 
-                    name="specialty" 
-                    className="form-input" 
+                  <input
+                    type="text"
+                    name="specialty"
+                    className="form-input"
                     placeholder="Radiologie"
                     value={formData.specialty}
-                    onChange={handleChange} 
-                    required 
+                    onChange={handleChange}
+                    required
                   />
                 </div>
                 <div className="form-group">
                   <label>Numéro de licence</label>
-                  <input 
-                    type="text" 
-                    name="license_number" 
-                    className="form-input" 
+                  <input
+                    type="text"
+                    name="license_number"
+                    className="form-input"
                     placeholder="LIC-00000"
                     value={formData.license_number}
-                    onChange={handleChange} 
-                    required 
+                    onChange={handleChange}
+                    required
                   />
                 </div>
               </div>
@@ -170,17 +170,17 @@ const Signup = () => {
             <div className="form-group">
               <label>Mot de passe</label>
               <div className="password-input-wrapper">
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  name="password" 
-                  className="form-input" 
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  className="form-input"
                   placeholder="Min. 8 caractères"
                   value={formData.password}
-                  onChange={handleChange} 
-                  required 
+                  onChange={handleChange}
+                  required
                 />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >

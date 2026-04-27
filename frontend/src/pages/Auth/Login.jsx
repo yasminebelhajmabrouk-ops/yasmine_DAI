@@ -54,7 +54,7 @@ const Login = () => {
           <div className="auth-side-overlay"></div>
         </div>
         <div className="auth-side-footer">
-          <div className="auth-side-logo">DAI-BMAD</div>
+          <div className="auth-side-logo">DAI</div>
           <p className="auth-side-quote">
             "La précision technologique au service de la sécurité anesthésique."
           </p>
